@@ -65,4 +65,7 @@ dependencies {
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
+
+    // Icons 차후 제거
+    implementation(libs.material.icons.extended)
 }

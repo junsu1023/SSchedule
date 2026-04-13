@@ -15,6 +15,7 @@ hilt = "2.59.2"
 room = "2.7.0-alpha01"
 ksp = "2.1.0-1.0.29"
 navigationCompose = "2.9.7"
+compose = "1.7.8" # 임시 사용
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,9 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 
 # Navigation
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+
+# Icons 차후 제거
+material-icons-extended = { group = "androidx.compose.material", name="material-icons-extended", version.ref = "compose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -36,7 +36,7 @@ enum class ShiftEntry(val entry: String) {
 @Composable
 fun ShiftEntrySheet(
     onDismiss: () -> Unit,
-    onSave: () -> Unit
+    onSave: (startDate: LocalDate, endDate: LocalDate, shiftType: String) -> Unit
 ) {
     var selectedShift by remember { mutableStateOf(ShiftEntry.DAY.name) }
     var startDate by remember { mutableStateOf(LocalDate.now()) }
@@ -186,7 +186,7 @@ fun ShiftEntrySheet(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Button(
-                    onClick = onSave,
+                    onClick = { onSave(startDate, endDate, selectedShift) },
                     colors = ButtonDefaults.buttonColors(containerColor = ScheduleTheme.colors.containerColor1),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.height(52.dp)

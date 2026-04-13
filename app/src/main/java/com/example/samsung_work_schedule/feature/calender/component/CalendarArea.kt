@@ -24,11 +24,15 @@ import java.time.YearMonth
 import com.example.samsung_work_schedule.R
 import androidx.compose.foundation.clickable
 
+import com.example.domain.model.WorkSchedule
+import com.example.domain.model.WorkType
+
 @Composable
 fun CalendarArea(
     pagerState: PagerState,
     baseMonth: YearMonth,
     initialPage: Int,
+    workSchedules: List<WorkSchedule>,
     selectedDate: LocalDate? = null,
     isDialog: Boolean = false,
     onDateClick: (LocalDate) -> Unit = {}
@@ -44,6 +48,7 @@ fun CalendarArea(
         MonthCalendar(
             modifier = Modifier.fillMaxWidth(),
             yearMonth = displayMonth,
+            workSchedules = workSchedules,
             selectedDate = selectedDate,
             isDialog = isDialog,
             onDateClick = onDateClick
@@ -55,6 +60,7 @@ fun CalendarArea(
 fun MonthCalendar(
     modifier: Modifier = Modifier,
     yearMonth: YearMonth,
+    workSchedules: List<WorkSchedule>,
     selectedDate: LocalDate? = null,
     isDialog: Boolean = false,
     onDateClick: (LocalDate) -> Unit = {}
@@ -127,11 +133,14 @@ fun MonthCalendar(
                         val isSelected = date == selectedDate
 
                         Box(modifier = Modifier.weight(1f)) {
+                            val schedule = workSchedules.find { it.date == date }
+
                             DayCell(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .clickable { onDateClick(date) },
                                 day = date.dayOfMonth.toString(),
+                                schedule = schedule,
                                 isToday = isToday,
                                 isSelected = isSelected,
                                 isCurrentMonth = isCurrentMonthDay,
@@ -161,6 +170,7 @@ fun MonthCalendar(
 fun DayCell(
     modifier: Modifier = Modifier,
     day: String,
+    schedule: WorkSchedule?,
     isToday: Boolean,
     isSelected: Boolean = false,
     isCurrentMonth: Boolean,
@@ -224,11 +234,11 @@ fun DayCell(
                     contentAlignment = Alignment.TopCenter
                 ) {
                     if (isCurrentMonth && !isDialog) {
-                        val dotColor = when (day.toIntOrNull()?.let { it % 5 }) {
-                            1 -> ScheduleTheme.colors.day
-                            2 -> ScheduleTheme.colors.sw
-                            3 -> ScheduleTheme.colors.gy
-                            4 -> ScheduleTheme.colors.off
+                        val dotColor = when (schedule?.type) {
+                            WorkType.DAY -> ScheduleTheme.colors.day
+                            WorkType.SW -> ScheduleTheme.colors.sw
+                            WorkType.GY -> ScheduleTheme.colors.gy
+                            WorkType.OFF -> ScheduleTheme.colors.off
                             else -> null
                         }
 

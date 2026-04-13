@@ -99,6 +99,7 @@ fun CustomDatePickerDialog(
                     pagerState = pagerState,
                     baseMonth = baseMonth,
                     initialPage = initialPage,
+                    workSchedules = emptyList(),
                     selectedDate = tempSelectedDate,
                     isDialog = true,
                     onDateClick = { tempSelectedDate = it }

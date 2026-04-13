@@ -28,15 +28,27 @@ import com.example.samsung_work_schedule.R
 import androidx.compose.runtime.*
 import com.example.samsung_work_schedule.feature.calender.component.*
 
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.samsung_work_schedule.feature.calender.viewmodel.CalendarViewModel
+import com.example.domain.model.WorkType
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen() {
+fun CalendarScreen(
+    viewModel: CalendarViewModel = hiltViewModel()
+) {
     val totalPageCount = Int.MAX_VALUE
     val initialPage = totalPageCount / 2
     val pagerState = rememberPagerState(pageCount = { totalPageCount }, initialPage = initialPage)
     val baseMonth = remember { YearMonth.now() }
     val currentYearMonth = baseMonth.plusMonths((pagerState.currentPage - initialPage).toLong())
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    val workSchedules by viewModel.workSchedules.collectAsState()
+
+    LaunchedEffect(currentYearMonth) {
+        viewModel.onMonthChanged(currentYearMonth)
+    }
 
     Scaffold(
         topBar = {
@@ -53,8 +65,8 @@ fun CalendarScreen() {
         if (showBottomSheet) {
             ShiftEntrySheet(
                 onDismiss = { showBottomSheet = false },
-                onSave = {
-                    // TODO: 저장 로직 구현
+                onSave = { startDate, endDate, shiftType ->
+                    viewModel.saveSchedule(startDate, endDate, WorkType.valueOf(shiftType))
                     showBottomSheet = false
                 }
             )
@@ -76,7 +88,8 @@ fun CalendarScreen() {
                 CalendarArea(
                     pagerState = pagerState,
                     baseMonth = baseMonth,
-                    initialPage = initialPage
+                    initialPage = initialPage,
+                    workSchedules = workSchedules
                 )
             }
 

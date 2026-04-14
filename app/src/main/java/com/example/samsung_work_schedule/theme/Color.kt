@@ -122,7 +122,7 @@ class ScheduleColors(
         private set
     var iconColor5 by mutableStateOf(iconColor5)
         private set
-    var iconColor6 by mutableStateOf(textColor9)
+    var iconColor6 by mutableStateOf(iconColor6)
         private set
     var containerColor1 by mutableStateOf(containerColor1)
         private set

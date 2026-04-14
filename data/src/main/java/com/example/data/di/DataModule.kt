@@ -34,7 +34,8 @@ object DataModule {
             context,
             WorkScheduleDatabase::class.java,
             WorkScheduleDatabase.DATABASE_NAME
-        ).build()
+        ).fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
     }
 
     @Provides

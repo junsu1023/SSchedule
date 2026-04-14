@@ -9,6 +9,7 @@
     <string name="sw">SW</string>
     <string name="gy">GY</string>
     <string name="off">OFF</string>
+    <string name="shift_none">정보 없음</string>
     <string name="today">today</string>
     <string name="work_info">근무 정보</string>
     <string name="detail">상세 보기</string>

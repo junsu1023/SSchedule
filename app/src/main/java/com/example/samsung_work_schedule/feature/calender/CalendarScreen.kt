@@ -18,11 +18,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.domain.model.WorkSchedule
 import com.example.domain.model.WorkType
 import com.example.samsung_work_schedule.R
 import com.example.samsung_work_schedule.feature.calender.component.*
 import com.example.samsung_work_schedule.feature.calender.viewmodel.CalendarViewModel
 import com.example.samsung_work_schedule.theme.ScheduleTheme
+import java.time.LocalDate
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +36,7 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
     val baseMonth = remember { YearMonth.now() }
     val currentYearMonth = baseMonth.plusMonths((pagerState.currentPage - initialPage).toLong())
     val showBottomSheet = remember { mutableStateOf(false) }
-    val showDetailDialog = remember { mutableStateOf(false) }
+    var selectedDateForDetail by remember { mutableStateOf<LocalDate?>(null) }
     val workSchedules by viewModel.workSchedules.collectAsState()
 
     LaunchedEffect(currentYearMonth) {
@@ -53,7 +55,7 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
                 FloatingActionButton(onClick = { showBottomSheet.value = true })
             },
             containerColor = ScheduleTheme.colors.background1,
-            modifier = Modifier.blur(if(showBottomSheet.value || showDetailDialog.value) 10.dp else 0.dp)
+            modifier = Modifier.blur(if(showBottomSheet.value || selectedDateForDetail != null) 10.dp else 0.dp)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -73,12 +75,16 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
                         baseMonth = baseMonth,
                         initialPage = initialPage,
                         workSchedules = workSchedules,
-                        onDateClick = { showDetailDialog.value = true }
+                        onDateClick = { selectedDateForDetail = it }
                     )
                 }
 
                 item {
-                    NextShiftCard(onDetailClick = { showDetailDialog.value = true })
+                    val todaySchedule = workSchedules.find { it.date == LocalDate.now() }
+                    TodayShiftCard(
+                        schedule = todaySchedule,
+                        onDetailClick = { selectedDateForDetail = LocalDate.now() }
+                    )
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -89,24 +95,51 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
             ShiftEntrySheet(
                 onDismiss = { showBottomSheet.value = false },
                 onSave = { startDate, endDate, shiftType ->
-                    viewModel.saveSchedule(startDate, endDate, WorkType.valueOf(shiftType))
+                    val type = WorkType.valueOf(shiftType)
+                    var current = startDate
+                    while (!current.isAfter(endDate)) {
+                        val existingSchedule = workSchedules.find { it.date == current }
+                        viewModel.saveSchedule(current, current, type, existingSchedule?.note ?: "")
+                        current = current.plusDays(1)
+                    }
                     showBottomSheet.value = false
                 }
             )
         }
 
-        if(showDetailDialog.value) {
+        selectedDateForDetail?.let { date ->
+            val schedule = workSchedules.find { it.date == date }
+
             ShiftDetailDialog(
-                onDismiss = { showDetailDialog.value = false },
-                onSave = { showDetailDialog.value = false },
-                onDelete = { /* TODO */ }
+                date = date,
+                schedule = schedule,
+                onDismiss = { selectedDateForDetail = null },
+                onSave = { type, notes ->
+                    viewModel.saveSchedule(date, date, type, notes)
+                    selectedDateForDetail = null
+                },
+                onDelete = {
+                    viewModel.deleteSchedule(date, date)
+                    selectedDateForDetail = null
+                }
             )
         }
     }
 }
 
 @Composable
-fun NextShiftCard(onDetailClick: () -> Unit) {
+fun TodayShiftCard(
+    schedule: WorkSchedule?,
+    onDetailClick: () -> Unit
+) {
+    val (shiftTitle, shiftTime) = when (schedule?.type) {
+        WorkType.DAY -> "DAY" to "06:00 ~\n14:00"
+        WorkType.SW -> "SW" to "14:00 ~\n22:00"
+        WorkType.GY -> "GY" to "22:00 ~\n06:00"
+        WorkType.OFF -> "OFF" to "00:00 ~\n00:00"
+        else -> "정보 없음" to "00:00 ~\n00:00"
+    }
+
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth()
@@ -138,7 +171,7 @@ fun NextShiftCard(onDetailClick: () -> Unit) {
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        text = "주간\n근무",
+                        text = shiftTitle,
                         style = TextStyle(
                             fontSize = 38.sp,
                             color = ScheduleTheme.colors.textColor5,
@@ -147,7 +180,7 @@ fun NextShiftCard(onDetailClick: () -> Unit) {
                     )
 
                     Text(
-                        text = "08:00 -\n16:00",
+                        text = shiftTime,
                         style = TextStyle(
                             fontSize = 18.sp,
                             color = ScheduleTheme.colors.textColor5
@@ -157,8 +190,14 @@ fun NextShiftCard(onDetailClick: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                val noteText = if (schedule?.note.isNullOrBlank()) {
+                    "오늘 • 메모 없음"
+                } else {
+                    "오늘 • ${schedule!!.note}"
+                }
+
                 Text(
-                    text = "내일 • 일반 병동 B",
+                    text = noteText,
                     style = TextStyle(
                         fontSize = 16.sp,
                         color = ScheduleTheme.colors.textColor5

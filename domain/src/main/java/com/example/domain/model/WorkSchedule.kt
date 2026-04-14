@@ -4,5 +4,6 @@ import java.time.LocalDate
 
 data class WorkSchedule(
     val date: LocalDate,
-    val type: WorkType
+    val type: WorkType,
+    val note: String = ""
 )

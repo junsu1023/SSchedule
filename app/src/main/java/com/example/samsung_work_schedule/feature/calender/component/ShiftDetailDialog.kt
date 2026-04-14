@@ -25,16 +25,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.domain.model.WorkSchedule
+import com.example.domain.model.WorkType
 import com.example.samsung_work_schedule.R
 import com.example.samsung_work_schedule.theme.ScheduleTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun ShiftDetailDialog(
+    date: LocalDate,
+    schedule: WorkSchedule?,
     onDismiss: () -> Unit,
-    onSave: () -> Unit,
+    onSave: (WorkType, String) -> Unit,
     onDelete: () -> Unit
 ) {
-    val text = remember { mutableStateOf("") }
+    val notes = remember(schedule) { mutableStateOf(schedule?.note ?: "") }
+    val workType = schedule?.type ?: WorkType.NONE
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN) }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -54,14 +63,14 @@ fun ShiftDetailDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                ShiftBadge(label = stringResource(R.string.day_shift), color = ScheduleTheme.colors.day)
+                ShiftBadge(workType)
 
                 Spacer(modifier = Modifier.height(32.dp))
 
                 DetailItem(
                     icon = Icons.Default.CalendarToday,
                     label = stringResource(R.string.date),
-                    value = "2026년 10월 13일"
+                    value = date.format(dateFormatter)
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -69,9 +78,9 @@ fun ShiftDetailDialog(
                 ProgressDetailItem(
                     icon = Icons.Default.AccessTime,
                     label = stringResource(R.string.hours),
-                    value = "08:00 — 16:00",
-                    badgeText = "8.0 시간",
-                    progress = 0.7f
+                    value = getWorkTimeRange(workType),
+                    badgeText = if (workType == WorkType.OFF || workType == WorkType.NONE) "0.0 시간" else "8.0 시간",
+                    progress = if (workType == WorkType.OFF  || workType == WorkType.NONE) 0f else 0.7f
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -81,8 +90,8 @@ fun ShiftDetailDialog(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
-                    value = text.value,
-                    onValueChange = { text.value = it },
+                    value = notes.value,
+                    onValueChange = { notes.value = it },
                     placeholder = { Text(stringResource(R.string.notes_placeholder), fontSize = 14.sp, color = Color.LightGray) },
                     modifier = Modifier.fillMaxWidth().height(100.dp),
                     shape = RoundedCornerShape(12.dp),
@@ -96,46 +105,33 @@ fun ShiftDetailDialog(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                ActionButtons(onDelete = onDelete, onSave = onSave)
+                ActionButtons(
+                    onDelete = onDelete,
+                    onSave = { onSave(workType, notes.value) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun DialogHeader(title: String, onDismiss: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = ScheduleTheme.colors.textColor3
-            )
-        )
-
-        IconButton(
-            onClick = onDismiss,
-            modifier = Modifier
-                .background(ScheduleTheme.colors.iconColor4, CircleShape)
-                .size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "닫기",
-                modifier = Modifier.size(20.dp),
-                tint = ScheduleTheme.colors.iconColor5
-            )
-        }
+private fun ShiftBadge(workType: WorkType) {
+    val label = when (workType) {
+        WorkType.DAY -> stringResource(R.string.day)
+        WorkType.SW -> stringResource(R.string.sw)
+        WorkType.GY -> stringResource(R.string.gy)
+        WorkType.OFF -> stringResource(R.string.off)
+        WorkType.NONE -> stringResource(R.string.shift_none)
     }
-}
+    
+    val color = when (workType) {
+        WorkType.DAY -> ScheduleTheme.colors.day
+        WorkType.SW -> ScheduleTheme.colors.sw
+        WorkType.GY -> ScheduleTheme.colors.gy
+        WorkType.OFF -> ScheduleTheme.colors.off
+        WorkType.NONE -> ScheduleTheme.colors.textColor3
+    }
 
-@Composable
-private fun ShiftBadge(label: String, color: Color) {
     Surface(
         color = color.copy(alpha = 0.1f),
         shape = RoundedCornerShape(20.dp)
@@ -150,12 +146,37 @@ private fun ShiftBadge(label: String, color: Color) {
 
             Text(
                 text = label,
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = color
-                )
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = color)
             )
+        }
+    }
+}
+
+private fun getWorkTimeRange(workType: WorkType): String {
+    return when (workType) {
+        WorkType.DAY -> "06:00 ~ 14:00"
+        WorkType.SW -> "14:00 ~ 22:00"
+        WorkType.GY -> "22:00 ~ 06:00"
+        else -> "0:00 ~ 00:00"
+    }
+}
+
+@Composable
+private fun DialogHeader(title: String, onDismiss: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = ScheduleTheme.colors.textColor3)
+        )
+        IconButton(
+            onClick = onDismiss,
+            modifier = Modifier.background(ScheduleTheme.colors.iconColor4, CircleShape).size(36.dp)
+        ) {
+            Icon(Icons.Default.Close, contentDescription = "닫기", modifier = Modifier.size(20.dp), tint = ScheduleTheme.colors.iconColor5)
         }
     }
 }
@@ -212,8 +233,15 @@ private fun DetailItem(icon: ImageVector, label: String, value: String, badgeTex
 @Composable
 private fun ProgressDetailItem(icon: ImageVector, label: String, value: String, badgeText: String, progress: Float) {
     Column {
-        DetailItem(icon = icon, label = label, value = value, badgeText = badgeText)
+        DetailItem(
+            icon = icon,
+            label = label,
+            value = value,
+            badgeText = badgeText
+        )
+
         Spacer(modifier = Modifier.height(12.dp))
+
         LinearProgressIndicator(
             progress = { progress },
             modifier = Modifier.fillMaxWidth().padding(start = 56.dp).height(6.dp),
@@ -252,6 +280,7 @@ private fun SectionHeader(icon: ImageVector, label: String) {
             modifier = Modifier.size(20.dp
             )
         )
+
         Spacer(modifier = Modifier.width(8.dp))
 
         Text(

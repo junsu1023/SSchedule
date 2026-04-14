@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.example.data.entity.WorkScheduleEntity
 import com.example.data.local.dao.WorkScheduleDao
 
-@Database(entities = [WorkScheduleEntity::class], version = 1)
+@Database(entities = [WorkScheduleEntity::class], version = 2)
 @TypeConverters(RoomConverters::class)
 abstract class WorkScheduleDatabase : RoomDatabase() {
     abstract fun workScheduleDao(): WorkScheduleDao

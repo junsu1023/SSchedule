@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -75,12 +74,11 @@ fun ShiftDetailDialog(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                ProgressDetailItem(
+                DetailItem(
                     icon = Icons.Default.AccessTime,
                     label = stringResource(R.string.hours),
                     value = getWorkTimeRange(workType),
-                    badgeText = if (workType == WorkType.OFF || workType == WorkType.NONE) "0.0 시간" else "8.0 시간",
-                    progress = if (workType == WorkType.OFF  || workType == WorkType.NONE) 0f else 0.7f
+                    badgeText = if(workType == WorkType.OFF || workType == WorkType.NONE) "0.0 시간" else "8.0 시간"
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -227,28 +225,6 @@ private fun DetailItem(icon: ImageVector, label: String, value: String, badgeTex
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun ProgressDetailItem(icon: ImageVector, label: String, value: String, badgeText: String, progress: Float) {
-    Column {
-        DetailItem(
-            icon = icon,
-            label = label,
-            value = value,
-            badgeText = badgeText
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        LinearProgressIndicator(
-            progress = { progress },
-            modifier = Modifier.fillMaxWidth().padding(start = 56.dp).height(6.dp),
-            color = ScheduleTheme.colors.containerColor1,
-            trackColor = ScheduleTheme.colors.surfaceColor1,
-            strokeCap = StrokeCap.Round
-        )
     }
 }
 

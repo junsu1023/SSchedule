@@ -45,16 +45,16 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
+            containerColor = ScheduleTheme.colors.background2,
             topBar = {
                 TopAppBar(
                     title = { TopBarTitle(currentYearMonth) },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = ScheduleTheme.colors.background1)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = ScheduleTheme.colors.background2)
                 )
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = { showBottomSheet.value = true })
             },
-            containerColor = ScheduleTheme.colors.background2,
             modifier = Modifier.blur(if(showBottomSheet.value || selectedDateForDetail != null) 10.dp else 0.dp)
         ) { paddingValues ->
             LazyColumn(

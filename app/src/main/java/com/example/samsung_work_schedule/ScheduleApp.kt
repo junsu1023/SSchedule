@@ -51,13 +51,14 @@ fun ScheduleApp() {
     )
 
     Scaffold(
+        containerColor = ScheduleTheme.colors.background2,
         bottomBar = {
             Surface(
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
                 shadowElevation = 16.dp,
-                color = ScheduleTheme.colors.background1
+                color = ScheduleTheme.colors.background2
             ) {
-                NavigationBar(containerColor = ScheduleTheme.colors.background1) {
+                NavigationBar(containerColor = ScheduleTheme.colors.background2) {
                     items.forEach { screen ->
                         val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
 

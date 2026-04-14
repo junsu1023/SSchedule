@@ -54,15 +54,19 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
             floatingActionButton = {
                 FloatingActionButton(onClick = { showBottomSheet.value = true })
             },
-            containerColor = ScheduleTheme.colors.background1,
+            containerColor = ScheduleTheme.colors.background2,
             modifier = Modifier.blur(if(showBottomSheet.value || selectedDateForDetail != null) 10.dp else 0.dp)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
                     .background(ScheduleTheme.colors.background2),
+                contentPadding = PaddingValues(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateBottomPadding(),
+                    start = 16.dp,
+                    end = 16.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
                 item {
@@ -81,12 +85,11 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
 
                 item {
                     val todaySchedule = workSchedules.find { it.date == LocalDate.now() }
+
                     TodayShiftCard(
                         schedule = todaySchedule,
                         onDetailClick = { selectedDateForDetail = LocalDate.now() }
                     )
-
-                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }

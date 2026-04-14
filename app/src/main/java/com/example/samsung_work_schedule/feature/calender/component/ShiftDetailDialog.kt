@@ -144,7 +144,11 @@ private fun ShiftBadge(workType: WorkType) {
 
             Text(
                 text = label,
-                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = color)
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = color
+                )
             )
         }
     }
@@ -278,7 +282,7 @@ private fun ActionButtons(onDelete: () -> Unit, onSave: () -> Unit) {
     ) {
         OutlinedButton(
             onClick = onDelete,
-            modifier = Modifier.weight(1f).height(52.dp),
+            modifier = Modifier.weight(1f).height(58.dp),
             shape = RoundedCornerShape(36.dp),
             border = BorderStroke(1.dp, ScheduleTheme.colors.surfaceColor1)
         ) {
@@ -294,13 +298,13 @@ private fun ActionButtons(onDelete: () -> Unit, onSave: () -> Unit) {
                 text = stringResource(R.string.delete_shift),
                 color = ScheduleTheme.colors.textColor9,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                fontSize = 12.sp
             )
         }
 
         Button(
             onClick = onSave,
-            modifier = Modifier.weight(1f).height(52.dp),
+            modifier = Modifier.weight(1f).height(58.dp),
             shape = RoundedCornerShape(36.dp),
             colors = ButtonDefaults.buttonColors(containerColor = ScheduleTheme.colors.primary)
         ) {
@@ -308,7 +312,7 @@ private fun ActionButtons(onDelete: () -> Unit, onSave: () -> Unit) {
                 text = stringResource(R.string.save_changes),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 textAlign = TextAlign.Center
             )
         }

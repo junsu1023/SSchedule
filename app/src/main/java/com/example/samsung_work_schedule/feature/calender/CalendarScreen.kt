@@ -30,14 +30,12 @@ import java.time.YearMonth
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
+    val uiState by viewModel.uiState.collectAsState()
     val totalPageCount = Int.MAX_VALUE
     val initialPage = totalPageCount / 2
     val pagerState = rememberPagerState(pageCount = { totalPageCount }, initialPage = initialPage)
     val baseMonth = remember { YearMonth.now() }
     val currentYearMonth = baseMonth.plusMonths((pagerState.currentPage - initialPage).toLong())
-    val showBottomSheet = remember { mutableStateOf(false) }
-    var selectedDateForDetail by remember { mutableStateOf<LocalDate?>(null) }
-    val workSchedules by viewModel.workSchedules.collectAsState()
 
     LaunchedEffect(currentYearMonth) {
         viewModel.onMonthChanged(currentYearMonth)
@@ -53,9 +51,9 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { showBottomSheet.value = true })
+                FloatingActionButton(onClick = { viewModel.setBottomSheetVisible(true) })
             },
-            modifier = Modifier.blur(if(showBottomSheet.value || selectedDateForDetail != null) 10.dp else 0.dp)
+            modifier = Modifier.blur(if(uiState.isBottomSheetVisible || uiState.selectedDateForDetail != null) 10.dp else 0.dp)
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -78,52 +76,55 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
                         pagerState = pagerState,
                         baseMonth = baseMonth,
                         initialPage = initialPage,
-                        workSchedules = workSchedules,
-                        onDateClick = { selectedDateForDetail = it }
+                        workSchedules = uiState.workSchedules,
+                        onDateClick = { viewModel.onDateSelected(it) }
                     )
                 }
 
                 item {
-                    val todaySchedule = workSchedules.find { it.date == LocalDate.now() }
+                    val todaySchedule = uiState.workSchedules.find { it.date == LocalDate.now() }
 
                     TodayShiftCard(
                         schedule = todaySchedule,
-                        onDetailClick = { selectedDateForDetail = LocalDate.now() }
+                        onDetailClick = { viewModel.onDateSelected(LocalDate.now()) }
                     )
                 }
             }
         }
 
-        if (showBottomSheet.value) {
+        if (uiState.isBottomSheetVisible) {
             ShiftEntrySheet(
-                onDismiss = { showBottomSheet.value = false },
+                onDismiss = { viewModel.setBottomSheetVisible(false) },
                 onSave = { startDate, endDate, shiftType ->
                     val type = WorkType.valueOf(shiftType)
                     var current = startDate
+
                     while (!current.isAfter(endDate)) {
-                        val existingSchedule = workSchedules.find { it.date == current }
+                        val existingSchedule = uiState.workSchedules.find { it.date == current }
+
                         viewModel.saveSchedule(current, current, type, existingSchedule?.note ?: "")
                         current = current.plusDays(1)
                     }
-                    showBottomSheet.value = false
+
+                    viewModel.setBottomSheetVisible(false)
                 }
             )
         }
 
-        selectedDateForDetail?.let { date ->
-            val schedule = workSchedules.find { it.date == date }
+        uiState.selectedDateForDetail?.let { date ->
+            val schedule = uiState.workSchedules.find { it.date == date }
 
             ShiftDetailDialog(
                 date = date,
                 schedule = schedule,
-                onDismiss = { selectedDateForDetail = null },
+                onDismiss = { viewModel.onDateSelected(null) },
                 onSave = { type, notes ->
                     viewModel.saveSchedule(date, date, type, notes)
-                    selectedDateForDetail = null
+                    viewModel.onDateSelected(null)
                 },
                 onDelete = {
                     viewModel.deleteSchedule(date, date)
-                    selectedDateForDetail = null
+                    viewModel.onDateSelected(null)
                 }
             )
         }
@@ -196,7 +197,7 @@ fun TodayShiftCard(
                 val noteText = if (schedule?.note.isNullOrBlank()) {
                     "오늘 • 메모 없음"
                 } else {
-                    "오늘 • ${schedule!!.note}"
+                    "오늘 • ${schedule.note}"
                 }
 
                 Text(

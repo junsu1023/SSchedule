@@ -42,6 +42,8 @@ val lightColors = ScheduleColors(
     dayBackground2 = Color(0xFFFFFFFF),
     transparent = Color(0x00000000),
     dimColor = Color(0xFFF7FAFC),
+    paleRed = Color(0xFFFFEBEE),
+    borderColor1 = Color(0xFFFFCDD2),
 
     primary = PrimaryBlue,
     textSecondary = TextGray
@@ -84,6 +86,8 @@ class ScheduleColors(
     dayBackground2: Color,
     transparent: Color,
     dimColor: Color,
+    paleRed: Color,
+    borderColor1: Color,
 
     primary: Color,
     textSecondary: Color
@@ -152,6 +156,10 @@ class ScheduleColors(
         private set
     var dimColor by mutableStateOf(dimColor)
         private set
+    var paleRed by mutableStateOf(paleRed)
+        private set
+    var borderColor1 by mutableStateOf(borderColor1)
+        private set
 
     var primary by mutableStateOf(primary)
     var textSecondary by mutableStateOf(textSecondary)
@@ -190,6 +198,8 @@ class ScheduleColors(
         dayBackground2 = dayBackground2,
         transparent = transparent,
         dimColor = dimColor,
+        paleRed = paleRed,
+        borderColor1 = borderColor1,
 
         primary = primary,
         textSecondary = textSecondary,
@@ -228,6 +238,8 @@ class ScheduleColors(
         dayBackground2 = other.dayBackground2
         transparent = other.transparent
         dimColor = other.dimColor
+        paleRed = other.paleRed
+        borderColor1 = other.borderColor1
 
         primary = other.primary
         textSecondary = other.textSecondary

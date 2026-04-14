@@ -41,7 +41,7 @@ fun ShiftDetailDialog(
     onDelete: () -> Unit
 ) {
     val notes = remember(schedule) { mutableStateOf(schedule?.note ?: "") }
-    val currentWorkType = remember(schedule) { mutableStateOf(schedule?.type ?: WorkType.OFF) }
+    val currentWorkType = remember(schedule) { mutableStateOf(schedule?.type ?: WorkType.NONE) }
     val showMenu = remember { mutableStateOf(false) }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN) }
 
@@ -226,7 +226,12 @@ private fun DialogHeader(title: String, onDismiss: () -> Unit) {
             onClick = onDismiss,
             modifier = Modifier.background(ScheduleTheme.colors.iconColor4, CircleShape).size(36.dp)
         ) {
-            Icon(Icons.Default.Close, contentDescription = "닫기", modifier = Modifier.size(20.dp), tint = ScheduleTheme.colors.iconColor5)
+            Icon(
+                imageVector = Icons.Default.Close, 
+                contentDescription = "닫기",
+                modifier = Modifier.size(20.dp),
+                tint = ScheduleTheme.colors.iconColor5
+            )
         }
     }
 }

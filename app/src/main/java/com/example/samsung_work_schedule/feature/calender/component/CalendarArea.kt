@@ -23,7 +23,6 @@ import java.time.LocalDate
 import java.time.YearMonth
 import com.example.samsung_work_schedule.R
 import androidx.compose.foundation.clickable
-
 import com.example.domain.model.WorkSchedule
 import com.example.domain.model.WorkType
 
@@ -34,6 +33,8 @@ fun CalendarArea(
     initialPage: Int,
     workSchedules: List<WorkSchedule>,
     selectedDate: LocalDate? = null,
+    startDate: LocalDate? = null,
+    endDate: LocalDate? = null,
     isDialog: Boolean = false,
     onDateClick: (LocalDate) -> Unit = {}
 ) {
@@ -50,6 +51,8 @@ fun CalendarArea(
             yearMonth = displayMonth,
             workSchedules = workSchedules,
             selectedDate = selectedDate,
+            startDate = startDate,
+            endDate = endDate,
             isDialog = isDialog,
             onDateClick = onDateClick
         )
@@ -62,6 +65,8 @@ fun MonthCalendar(
     yearMonth: YearMonth,
     workSchedules: List<WorkSchedule>,
     selectedDate: LocalDate? = null,
+    startDate: LocalDate? = null,
+    endDate: LocalDate? = null,
     isDialog: Boolean = false,
     onDateClick: (LocalDate) -> Unit = {}
 ) {
@@ -131,6 +136,8 @@ fun MonthCalendar(
 
                         val isToday = isCurrentMonthDay && date == today
                         val isSelected = date == selectedDate
+                        val isInRange = startDate != null && endDate != null && 
+                                       !date.isBefore(startDate) && !date.isAfter(endDate)
 
                         Box(modifier = Modifier.weight(1f)) {
                             val schedule = workSchedules.find { it.date == date }
@@ -143,6 +150,8 @@ fun MonthCalendar(
                                 schedule = schedule,
                                 isToday = isToday,
                                 isSelected = isSelected,
+                                isInRange = isInRange,
+                                isStartDate = date == startDate,
                                 isCurrentMonth = isCurrentMonthDay,
                                 isDialog = isDialog
                             )
@@ -173,10 +182,14 @@ fun DayCell(
     schedule: WorkSchedule?,
     isToday: Boolean,
     isSelected: Boolean = false,
+    isInRange: Boolean = false,
+    isStartDate: Boolean = false,
     isCurrentMonth: Boolean,
     isDialog: Boolean = false
 ) {
     val backgroundColor = when {
+        isStartDate -> ScheduleTheme.colors.paleRed
+        isInRange -> ScheduleTheme.colors.paleRed.copy(alpha = 0.7f)
         isSelected -> ScheduleTheme.colors.containerColor1.copy(alpha = 0.15f)
         isToday -> ScheduleTheme.colors.todayBackground
         !isCurrentMonth -> ScheduleTheme.colors.dayBackground1
@@ -188,7 +201,7 @@ fun DayCell(
             .aspectRatio(1f)
             .background(backgroundColor)
             .then(
-                if (isSelected) Modifier.border(1.5.dp, ScheduleTheme.colors.containerColor1)
+                if (isSelected || isStartDate) Modifier.border(1.5.dp, if(isStartDate) ScheduleTheme.colors.borderColor1 else ScheduleTheme.colors.containerColor1)
                 else Modifier
             )
     ) {

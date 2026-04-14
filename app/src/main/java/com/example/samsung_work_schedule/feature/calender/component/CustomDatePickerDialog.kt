@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -43,6 +42,8 @@ import androidx.compose.runtime.setValue
 @Composable
 fun CustomDatePickerDialog(
     initialDate: LocalDate,
+    startDate: LocalDate? = null,
+    endDate: LocalDate? = null,
     onDateSelected: (LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -63,7 +64,7 @@ fun CustomDatePickerDialog(
                 .fillMaxWidth()
                 .padding(24.dp),
             shape = RoundedCornerShape(24.dp),
-            color = Color.White
+            color = ScheduleTheme.colors.background1
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(
@@ -101,6 +102,8 @@ fun CustomDatePickerDialog(
                     initialPage = initialPage,
                     workSchedules = emptyList(),
                     selectedDate = tempSelectedDate,
+                    startDate = startDate ?: tempSelectedDate.takeIf { endDate != null },
+                    endDate = endDate ?: tempSelectedDate.takeIf { startDate != null },
                     isDialog = true,
                     onDateClick = { tempSelectedDate = it }
                 )

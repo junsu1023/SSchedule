@@ -95,19 +95,36 @@ fun ShiftEntrySheet(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom
+            ) {
                 DateInputBox(
                     label = stringResource(R.string.start_date),
                     date = startDate,
                     onClick = { pickingDateFor = "START" },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    containerColor = ScheduleTheme.colors.paleRed,
+                    borderColor = ScheduleTheme.colors.borderColor1
                 )
+
+                Box(
+                    modifier = Modifier
+                        .padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
+                        .size(24.dp)
+                        .background(ScheduleTheme.colors.primary.copy(alpha = 0.1f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("~", color = ScheduleTheme.colors.primary, fontWeight = FontWeight.Bold)
+                }
 
                 DateInputBox(
                     label = stringResource(R.string.end_date),
                     date = endDate,
                     onClick = { pickingDateFor = "END" },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    containerColor = ScheduleTheme.colors.primary.copy(alpha = 0.1f), // 종료일: 메인 포인트 색상의 연한 버전
+                    borderColor = ScheduleTheme.colors.primary.copy(alpha = 0.3f)
                 )
             }
 
@@ -211,8 +228,23 @@ fun ShiftEntrySheet(
 
         CustomDatePickerDialog(
             initialDate = initialDate,
-            onDateSelected = {
-                if (pickingDateFor == "START") startDate = it else endDate = it
+            startDate = if (pickingDateFor == "END") startDate else null,
+            endDate = if (pickingDateFor == "START") endDate else null,
+            onDateSelected = { selectedDate ->
+                if (pickingDateFor == "START") {
+                    startDate = selectedDate
+                    
+                    if (endDate.isBefore(selectedDate)) {
+                        endDate = selectedDate
+                    }
+                } else {
+                    endDate = selectedDate
+                    
+                    if (startDate.isAfter(selectedDate)) {
+                        startDate = selectedDate
+                    }
+                }
+                
                 pickingDateFor = null
             },
             onDismiss = { pickingDateFor = null }
@@ -225,7 +257,9 @@ fun DateInputBox(
     label: String,
     date: LocalDate,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    containerColor: Color = ScheduleTheme.colors.surfaceColor1,
+    borderColor: Color = Color.Transparent
 ) {
     val formatter = remember { DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH) }
 
@@ -243,9 +277,11 @@ fun DateInputBox(
 
         Surface(
             onClick = onClick,
-            color = ScheduleTheme.colors.surfaceColor1,
+            color = containerColor,
             shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, borderColor, RoundedCornerShape(16.dp))
         ) {
             Row(
                 modifier = Modifier.padding(16.dp),

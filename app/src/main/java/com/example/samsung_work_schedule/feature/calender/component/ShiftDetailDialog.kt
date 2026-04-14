@@ -41,7 +41,8 @@ fun ShiftDetailDialog(
     onDelete: () -> Unit
 ) {
     val notes = remember(schedule) { mutableStateOf(schedule?.note ?: "") }
-    val workType = schedule?.type ?: WorkType.NONE
+    val currentWorkType = remember(schedule) { mutableStateOf(schedule?.type ?: WorkType.OFF) }
+    val showMenu = remember { mutableStateOf(false) }
     val dateFormatter = remember { DateTimeFormatter.ofPattern("yyyy년 MM월 dd일", Locale.KOREAN) }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -62,7 +63,54 @@ fun ShiftDetailDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                ShiftBadge(workType)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ShiftBadge(currentWorkType.value)
+
+                    Box {
+                        IconButton(
+                            onClick = { showMenu.value = true },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "근무 수정",
+                                tint = ScheduleTheme.colors.textColor8,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = showMenu.value,
+                            onDismissRequest = { showMenu.value = false },
+                            modifier = Modifier.background(ScheduleTheme.colors.background1)
+                        ) {
+                            listOf(WorkType.DAY, WorkType.SW, WorkType.GY, WorkType.OFF).forEach { type ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = when(type) {
+                                                WorkType.DAY -> stringResource(R.string.day)
+                                                WorkType.SW -> stringResource(R.string.sw)
+                                                WorkType.GY -> stringResource(R.string.gy)
+                                                WorkType.OFF -> stringResource(R.string.off)
+                                                else -> ""
+                                            },
+                                            style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                                        )
+                                    },
+                                    onClick = {
+                                        currentWorkType.value = type
+                                        showMenu.value = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -77,8 +125,8 @@ fun ShiftDetailDialog(
                 DetailItem(
                     icon = Icons.Default.AccessTime,
                     label = stringResource(R.string.hours),
-                    value = getWorkTimeRange(workType),
-                    badgeText = if(workType == WorkType.OFF || workType == WorkType.NONE) "0.0 시간" else "8.0 시간"
+                    value = getWorkTimeRange(currentWorkType.value),
+                    badgeText = if(currentWorkType.value == WorkType.OFF || currentWorkType.value == WorkType.NONE) "0.0 시간" else "8.0 시간"
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -105,7 +153,7 @@ fun ShiftDetailDialog(
 
                 ActionButtons(
                     onDelete = onDelete,
-                    onSave = { onSave(workType, notes.value) }
+                    onSave = { onSave(currentWorkType.value, notes.value) }
                 )
             }
         }

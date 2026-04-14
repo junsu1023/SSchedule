@@ -21,11 +21,13 @@ val lightColors = ScheduleColors(
     textColor6 = Color(0xFFBBBBBB),
     textColor7 = Color(0xFF000000),
     textColor8 = Color(0xFF414755),
+    textColor9 = Color(0xFFE57373),
     iconColor1 = Color(0xFF1D4ED8),
     iconColor2 = Color(0xFF94A3B8),
     iconColor3 = Color(0xFFFFFFFF),
     iconColor4 = Color(0xFFF1F4F6),
     iconColor5 = Color(0xFF414755),
+    iconColor6 = Color(0xFFE57373),
     containerColor1 = Color(0xFF1D4ED8),
     containerColor2 = Color(0xFFFFFFFF),
     surfaceColor1 = Color(0xFFF1F4F6),
@@ -39,6 +41,7 @@ val lightColors = ScheduleColors(
     dayBackground1 = Color(0xFFF8F9FA),
     dayBackground2 = Color(0xFFFFFFFF),
     transparent = Color(0x00000000),
+    dimColor = Color(0xFFF7FAFC),
 
     primary = PrimaryBlue,
     textSecondary = TextGray
@@ -60,11 +63,13 @@ class ScheduleColors(
     textColor6: Color,
     textColor7: Color,
     textColor8: Color,
+    textColor9: Color,
     iconColor1: Color,
     iconColor2: Color,
     iconColor3: Color,
     iconColor4: Color,
     iconColor5: Color,
+    iconColor6: Color,
     containerColor1: Color,
     containerColor2: Color,
     surfaceColor1: Color,
@@ -78,6 +83,7 @@ class ScheduleColors(
     dayBackground1: Color,
     dayBackground2: Color,
     transparent: Color,
+    dimColor: Color,
 
     primary: Color,
     textSecondary: Color
@@ -104,6 +110,8 @@ class ScheduleColors(
         private set
     var textColor8 by mutableStateOf(textColor8)
         private set
+    var textColor9 by mutableStateOf(textColor9)
+        private set
     var iconColor1 by mutableStateOf(iconColor1)
         private set
     var iconColor2 by mutableStateOf(iconColor2)
@@ -113,6 +121,8 @@ class ScheduleColors(
     var iconColor4 by mutableStateOf(iconColor4)
         private set
     var iconColor5 by mutableStateOf(iconColor5)
+        private set
+    var iconColor6 by mutableStateOf(textColor9)
         private set
     var containerColor1 by mutableStateOf(containerColor1)
         private set
@@ -140,6 +150,8 @@ class ScheduleColors(
         private set
     var transparent by mutableStateOf(transparent)
         private set
+    var dimColor by mutableStateOf(dimColor)
+        private set
 
     var primary by mutableStateOf(primary)
     var textSecondary by mutableStateOf(textSecondary)
@@ -157,11 +169,13 @@ class ScheduleColors(
         textColor6 = textColor6,
         textColor7 = textColor7,
         textColor8 = textColor8,
+        textColor9 = textColor9,
         iconColor1 = iconColor1,
         iconColor2 = iconColor2,
         iconColor3 = iconColor3,
         iconColor4 = iconColor4,
         iconColor5 = iconColor5,
+        iconColor6 = iconColor6,
         containerColor1 = containerColor1,
         containerColor2 = containerColor2,
         surfaceColor1 = surfaceColor1,
@@ -175,6 +189,7 @@ class ScheduleColors(
         dayBackground1 = dayBackground1,
         dayBackground2 = dayBackground2,
         transparent = transparent,
+        dimColor = dimColor,
 
         primary = primary,
         textSecondary = textSecondary,
@@ -192,11 +207,13 @@ class ScheduleColors(
         textColor6 = other.textColor6
         textColor7 = other.textColor7
         textColor8 = other.textColor8
+        textColor9 = other.textColor9
         iconColor1 = other.iconColor1
         iconColor2 = other.iconColor2
         iconColor3 = other.iconColor3
         iconColor4 = other.iconColor4
         iconColor5 = other.iconColor5
+        iconColor6 = other.iconColor6
         containerColor1 = other.containerColor1
         containerColor2 = other.containerColor2
         surfaceColor1 = other.surfaceColor1
@@ -210,6 +227,7 @@ class ScheduleColors(
         dayBackground1 = other.dayBackground1
         dayBackground2 = other.dayBackground2
         transparent = other.transparent
+        dimColor = other.dimColor
 
         primary = other.primary
         textSecondary = other.textSecondary

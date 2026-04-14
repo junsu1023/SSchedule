@@ -19,4 +19,14 @@
     <string name="shift_assignment">교대 근무</string>
     <string name="cancel">취소</string>
     <string name="save">저장</string>
+    <string name="shift_details">근무 상세 정보</string>
+    <string name="day_shift">주간 근무</string>
+    <string name="date">날짜</string>
+    <string name="hours">시간</string>
+    <string name="notes">메모</string>
+    <string name="notes_placeholder">이 근무에 대한 구체적인 지침을 추가하세요...</string>
+    <string name="edit">편집</string>
+    <string name="save_changes">변경 사항 저장</string>
+    <string name="delete_shift">근무 삭제</string>
+    <string name="general_ward_b">일반 병동 B</string>
 </resources>

@@ -1,4 +1,3 @@
-
 package com.example.samsung_work_schedule.feature.calender
 
 import androidx.compose.foundation.background
@@ -7,10 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -18,92 +17,96 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.samsung_work_schedule.feature.calender.component.CalendarArea
-import com.example.samsung_work_schedule.feature.calender.component.FloatingActionButton
-import com.example.samsung_work_schedule.feature.calender.component.TopBarTitle
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.domain.model.WorkType
+import com.example.samsung_work_schedule.R
+import com.example.samsung_work_schedule.feature.calender.component.*
+import com.example.samsung_work_schedule.feature.calender.viewmodel.CalendarViewModel
 import com.example.samsung_work_schedule.theme.ScheduleTheme
 import java.time.YearMonth
-import com.example.samsung_work_schedule.feature.calender.component.CalendarHeader
-import com.example.samsung_work_schedule.R
-import androidx.compose.runtime.*
-import com.example.samsung_work_schedule.feature.calender.component.*
-
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.samsung_work_schedule.feature.calender.viewmodel.CalendarViewModel
-import com.example.domain.model.WorkType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen(
-    viewModel: CalendarViewModel = hiltViewModel()
-) {
+fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
     val totalPageCount = Int.MAX_VALUE
     val initialPage = totalPageCount / 2
     val pagerState = rememberPagerState(pageCount = { totalPageCount }, initialPage = initialPage)
     val baseMonth = remember { YearMonth.now() }
     val currentYearMonth = baseMonth.plusMonths((pagerState.currentPage - initialPage).toLong())
-    var showBottomSheet by remember { mutableStateOf(false) }
-
+    val showBottomSheet = remember { mutableStateOf(false) }
+    val showDetailDialog = remember { mutableStateOf(false) }
     val workSchedules by viewModel.workSchedules.collectAsState()
 
     LaunchedEffect(currentYearMonth) {
         viewModel.onMonthChanged(currentYearMonth)
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { TopBarTitle(currentYearMonth) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = ScheduleTheme.colors.background1)
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { showBottomSheet = true })
-        },
-        containerColor = ScheduleTheme.colors.background1
-    ) { paddingValues ->
-        if (showBottomSheet) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { TopBarTitle(currentYearMonth) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = ScheduleTheme.colors.background1)
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = { showBottomSheet.value = true })
+            },
+            containerColor = ScheduleTheme.colors.background1,
+            modifier = Modifier.blur(if(showBottomSheet.value || showDetailDialog.value) 10.dp else 0.dp)
+        ) { paddingValues ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .background(ScheduleTheme.colors.background2),
+                verticalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                item {
+                    CalendarHeader(currentYearMonth.monthValue)
+                }
+
+                item {
+                    CalendarArea(
+                        pagerState = pagerState,
+                        baseMonth = baseMonth,
+                        initialPage = initialPage,
+                        workSchedules = workSchedules,
+                        onDateClick = { showDetailDialog.value = true }
+                    )
+                }
+
+                item {
+                    NextShiftCard(onDetailClick = { showDetailDialog.value = true })
+
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+        }
+
+        if (showBottomSheet.value) {
             ShiftEntrySheet(
-                onDismiss = { showBottomSheet = false },
+                onDismiss = { showBottomSheet.value = false },
                 onSave = { startDate, endDate, shiftType ->
                     viewModel.saveSchedule(startDate, endDate, WorkType.valueOf(shiftType))
-                    showBottomSheet = false
+                    showBottomSheet.value = false
                 }
             )
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .background(ScheduleTheme.colors.background2),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
-        ) {
-            item {
-                CalendarHeader(currentYearMonth.monthValue)
-            }
-
-            item {
-                CalendarArea(
-                    pagerState = pagerState,
-                    baseMonth = baseMonth,
-                    initialPage = initialPage,
-                    workSchedules = workSchedules
-                )
-            }
-
-            item {
-                NextShiftCard()
-
-                Spacer(modifier = Modifier.height(32.dp))
-            }
+        if(showDetailDialog.value) {
+            ShiftDetailDialog(
+                onDismiss = { showDetailDialog.value = false },
+                onSave = { showDetailDialog.value = false },
+                onDelete = { /* TODO */ }
+            )
         }
     }
 }
 
 @Composable
-fun NextShiftCard() {
+fun NextShiftCard(onDetailClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(24.dp),
         modifier = Modifier.fillMaxWidth()
@@ -165,7 +168,7 @@ fun NextShiftCard() {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = onDetailClick,
                     colors = ButtonDefaults.buttonColors(containerColor = ScheduleTheme.colors.background1.copy(alpha = 0.2f)),
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth()

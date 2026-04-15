@@ -10,6 +10,8 @@ import com.example.domain.usecase.GetWorkSchedulesUseCase
 import com.example.domain.usecase.SaveWorkSchedulesUseCase
 import com.example.samsung_work_schedule.feature.calender.state.CalendarUiState
 import com.example.samsung_work_schedule.notification.ShiftAlarmManager
+import com.example.samsung_work_schedule.widget.WorkScheduleWidgetProvider
+import com.example.samsung_work_schedule.ScheduleApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,6 +85,10 @@ class CalendarViewModel @Inject constructor(
 
             saveWorkSchedulesUseCase(schedules)
             Log.d("CalendarViewModel", "Schedules saved, now scheduling ${schedules.size} alarms")
+            
+            // 위젯 업데이트 트리거
+            WorkScheduleWidgetProvider.triggerUpdate(ScheduleApplication.context)
+
             schedules.forEach {
                 try {
                     Log.d("CalendarViewModel", "Calling shiftAlarmManager.scheduleAlarm for ${it.date} (Type: ${it.type})")
@@ -98,6 +104,10 @@ class CalendarViewModel @Inject constructor(
     fun deleteSchedule(startDate: LocalDate, endDate: LocalDate) {
         viewModelScope.launch {
             deleteWorkSchedulesUseCase(startDate, endDate)
+            
+            // 위젯 업데이트 트리거
+            WorkScheduleWidgetProvider.triggerUpdate(ScheduleApplication.context)
+
             var current = startDate
             while (!current.isAfter(endDate)) {
                 shiftAlarmManager.cancelAlarm(current)

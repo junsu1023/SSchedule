@@ -19,6 +19,10 @@ class WorkScheduleRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getWorkSchedule(date: LocalDate): WorkSchedule? {
+        return dao.getWorkSchedule(date)?.toDomain()
+    }
+
     override suspend fun saveWorkSchedules(workSchedules: List<WorkSchedule>) {
         dao.insertWorkSchedules(workSchedules.map { it.toEntity() })
     }

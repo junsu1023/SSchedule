@@ -99,7 +99,11 @@ fun ShiftDetailDialog(
                                                 WorkType.OFF -> stringResource(R.string.off)
                                                 else -> ""
                                             },
-                                            style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                                            style = TextStyle(
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = ScheduleTheme.colors.textColor3
+                                            )
                                         )
                                     },
                                     onClick = {
@@ -138,7 +142,13 @@ fun ShiftDetailDialog(
                 OutlinedTextField(
                     value = notes.value,
                     onValueChange = { notes.value = it },
-                    placeholder = { Text(stringResource(R.string.notes_placeholder), fontSize = 14.sp, color = Color.LightGray) },
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.notes_placeholder),
+                            fontSize = 14.sp,
+                            color = ScheduleTheme.colors.textColor4
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth().height(100.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -169,7 +179,7 @@ private fun ShiftBadge(workType: WorkType) {
         WorkType.OFF -> stringResource(R.string.off)
         WorkType.NONE -> stringResource(R.string.shift_none)
     }
-    
+
     val color = when (workType) {
         WorkType.DAY -> ScheduleTheme.colors.day
         WorkType.SW -> ScheduleTheme.colors.sw
@@ -227,7 +237,7 @@ private fun DialogHeader(title: String, onDismiss: () -> Unit) {
             modifier = Modifier.background(ScheduleTheme.colors.iconColor4, CircleShape).size(36.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.Close, 
+                imageVector = Icons.Default.Close,
                 contentDescription = "닫기",
                 modifier = Modifier.size(20.dp),
                 tint = ScheduleTheme.colors.iconColor5
@@ -359,7 +369,7 @@ private fun ActionButtons(onDelete: () -> Unit, onSave: () -> Unit) {
             onClick = onSave,
             modifier = Modifier.weight(1f).height(58.dp),
             shape = RoundedCornerShape(36.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = ScheduleTheme.colors.primary)
+            colors = ButtonDefaults.buttonColors(containerColor = ScheduleTheme.colors.buttonColor1)
         ) {
             Text(
                 text = stringResource(R.string.save_changes),

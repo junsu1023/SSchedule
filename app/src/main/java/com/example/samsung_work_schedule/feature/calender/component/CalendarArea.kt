@@ -136,8 +136,8 @@ fun MonthCalendar(
 
                         val isToday = isCurrentMonthDay && date == today
                         val isSelected = date == selectedDate
-                        val isInRange = startDate != null && endDate != null && 
-                                       !date.isBefore(startDate) && !date.isAfter(endDate)
+                        val isInRange = startDate != null && endDate != null &&
+                                !date.isBefore(startDate) && !date.isAfter(endDate)
 
                         Box(modifier = Modifier.weight(1f)) {
                             val schedule = workSchedules.find { it.date == date }
@@ -257,6 +257,7 @@ fun DayCell(
 
                         dotColor?.let {
                             Spacer(modifier = Modifier.height(2.dp))
+
                             Box(
                                 modifier = Modifier
                                     .size(4.dp)

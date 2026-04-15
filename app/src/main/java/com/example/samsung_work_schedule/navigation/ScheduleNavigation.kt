@@ -1,3 +1,4 @@
+
 package com.example.samsung_work_schedule.navigation
 
 import androidx.compose.runtime.Composable
@@ -20,7 +21,7 @@ fun ScheduleNavigation(navController: NavHostController, modifier: Modifier = Mo
         }
 
         composable(Screen.Setting.route) {
-            SettingScreen()
+            SettingScreen(onBackClick = { navController.popBackStack() })
         }
     }
 }

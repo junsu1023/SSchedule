@@ -6,9 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-val PrimaryBlue = Color(0xFF0066FF)
-val TextGray = Color(0xFF666666)
-
 val lightColors = ScheduleColors(
     background1 = Color(0xFFFFFFFF),
     background2 = Color(0xFFF7FAFC),
@@ -44,12 +41,46 @@ val lightColors = ScheduleColors(
     dimColor = Color(0xFFF7FAFC),
     paleRed = Color(0xFFFFEBEE),
     borderColor1 = Color(0xFFFFCDD2),
-
-    primary = PrimaryBlue,
-    textSecondary = TextGray
+    buttonColor1 = Color(0xFF1D4ED8)
 )
 
-val darkColors = lightColors
+val darkColors = ScheduleColors(
+    background1 = Color(0xFF121212),
+    background2 = Color(0xFF000000),
+    indicatorColor1 = Color(0xFF1E293B),
+    textColor1 = Color(0xFF60A5FA),
+    textColor2 = Color(0xFF94A3B8),
+    textColor3 = Color(0xFFE2E8F0),
+    textColor4 = Color(0xFF94A3B8),
+    textColor5 = Color(0xFFFFFFFF),
+    textColor6 = Color(0xFF475569),
+    textColor7 = Color(0xFFFFFFFF),
+    textColor8 = Color(0xFFCBD5E1),
+    textColor9 = Color(0xFFF87171),
+    iconColor1 = Color(0xFF60A5FA),
+    iconColor2 = Color(0xFF94A3B8),
+    iconColor3 = Color(0xFFFFFFFF),
+    iconColor4 = Color(0xFF1E293B),
+    iconColor5 = Color(0xFFCBD5E1),
+    iconColor6 = Color(0xFFF87171),
+    containerColor1 = Color(0xFF2563EB),
+    containerColor2 = Color(0xFF1E293B),
+    surfaceColor1 = Color(0xFF1E293B),
+    surfaceColor2 = Color(0xFF0F172A),
+    day = Color(0xFF34D399),
+    sw = Color(0xFFA78BFA),
+    gy = Color(0xFFFBBF24),
+    off = Color(0xFFF472B6),
+    gridColor = Color(0xFF000000),
+    todayBackground = Color(0xFF1E3A8A),
+    dayBackground1 = Color(0xFF0F1930),
+    dayBackground2 = Color(0xFF060E20),
+    transparent = Color(0x00000000),
+    dimColor = Color(0xFF000000),
+    paleRed = Color(0xFF450A0A),
+    borderColor1 = Color(0xFF7F1D1D),
+    buttonColor1 = Color(0xFF1D4ED8)
+)
 
 val LocalColors = staticCompositionLocalOf { lightColors }
 
@@ -88,9 +119,7 @@ class ScheduleColors(
     dimColor: Color,
     paleRed: Color,
     borderColor1: Color,
-
-    primary: Color,
-    textSecondary: Color
+    buttonColor1: Color
 ) {
     var background1 by mutableStateOf(background1)
         private set
@@ -160,9 +189,7 @@ class ScheduleColors(
         private set
     var borderColor1 by mutableStateOf(borderColor1)
         private set
-
-    var primary by mutableStateOf(primary)
-    var textSecondary by mutableStateOf(textSecondary)
+    var buttonColor1 by mutableStateOf(buttonColor1)
         private set
 
     fun copy() = ScheduleColors(
@@ -200,9 +227,7 @@ class ScheduleColors(
         dimColor = dimColor,
         paleRed = paleRed,
         borderColor1 = borderColor1,
-
-        primary = primary,
-        textSecondary = textSecondary,
+        buttonColor1 = buttonColor1
     )
 
     fun updateColorsFrom(other: ScheduleColors) {
@@ -240,8 +265,6 @@ class ScheduleColors(
         dimColor = other.dimColor
         paleRed = other.paleRed
         borderColor1 = other.borderColor1
-
-        primary = other.primary
-        textSecondary = other.textSecondary
+        buttonColor1 = other.buttonColor1
     }
 }

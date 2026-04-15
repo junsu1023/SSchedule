@@ -5,7 +5,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 
-
 object ScheduleTheme {
     val colors: ScheduleColors
         @Composable
@@ -15,11 +14,11 @@ object ScheduleTheme {
 
 @Composable
 fun SamsungWorkScheduleTheme(
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val isDarkMode = false  // 차후 SharedPreference에 저장하여 사용 예정
-    val currentColor = remember(isDarkMode) { if(isDarkMode) darkColors else lightColors }
-    val rememberedColors = remember(isDarkMode) { currentColor.copy() }.apply { updateColorsFrom(currentColor) }
+    val currentColor = remember(darkTheme) { if(darkTheme) darkColors else lightColors }
+    val rememberedColors = remember(darkTheme) { currentColor.copy() }.apply { updateColorsFrom(currentColor) }
 
     CompositionLocalProvider(
         LocalColors provides rememberedColors

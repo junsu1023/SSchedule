@@ -1,5 +1,6 @@
-package com.example.samsung_work_schedule.feature.calender.viewmodel
+package com.example.samsung_work_schedule.feature.calender
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.WorkSchedule
@@ -8,9 +9,15 @@ import com.example.domain.usecase.DeleteWorkSchedulesUseCase
 import com.example.domain.usecase.GetWorkSchedulesUseCase
 import com.example.domain.usecase.SaveWorkSchedulesUseCase
 import com.example.samsung_work_schedule.feature.calender.state.CalendarUiState
+import com.example.samsung_work_schedule.notification.ShiftAlarmManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
@@ -21,7 +28,8 @@ import javax.inject.Inject
 class CalendarViewModel @Inject constructor(
     private val getWorkSchedulesUseCase: GetWorkSchedulesUseCase,
     private val saveWorkSchedulesUseCase: SaveWorkSchedulesUseCase,
-    private val deleteWorkSchedulesUseCase: DeleteWorkSchedulesUseCase
+    private val deleteWorkSchedulesUseCase: DeleteWorkSchedulesUseCase,
+    private val shiftAlarmManager: ShiftAlarmManager
 ) : ViewModel() {
 
     private val _currentMonth = MutableStateFlow(YearMonth.now())
@@ -46,7 +54,7 @@ class CalendarViewModel @Inject constructor(
         )
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = CalendarUiState()
     )
 
@@ -63,6 +71,7 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun saveSchedule(startDate: LocalDate, endDate: LocalDate, type: WorkType, note: String = "") {
+        Log.d("CalendarViewModel", "saveSchedule called: $startDate ~ $endDate, type: $type")
         viewModelScope.launch {
             val schedules = mutableListOf<WorkSchedule>()
             var current = startDate
@@ -73,12 +82,27 @@ class CalendarViewModel @Inject constructor(
             }
 
             saveWorkSchedulesUseCase(schedules)
+            Log.d("CalendarViewModel", "Schedules saved, now scheduling ${schedules.size} alarms")
+            schedules.forEach {
+                try {
+                    Log.d("CalendarViewModel", "Calling shiftAlarmManager.scheduleAlarm for ${it.date} (Type: ${it.type})")
+                    shiftAlarmManager.scheduleAlarm(it)
+                    Log.d("CalendarViewModel", "Successfully called scheduleAlarm for ${it.date}")
+                } catch (e: Throwable) {
+                    Log.e("CalendarViewModel", "Error calling scheduleAlarm for ${it.date}", e)
+                }
+            }
         }
     }
 
     fun deleteSchedule(startDate: LocalDate, endDate: LocalDate) {
         viewModelScope.launch {
             deleteWorkSchedulesUseCase(startDate, endDate)
+            var current = startDate
+            while (!current.isAfter(endDate)) {
+                shiftAlarmManager.cancelAlarm(current)
+                current = current.plusDays(1)
+            }
         }
     }
 }

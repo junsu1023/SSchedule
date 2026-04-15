@@ -22,7 +22,7 @@ import com.example.domain.model.WorkSchedule
 import com.example.domain.model.WorkType
 import com.example.samsung_work_schedule.R
 import com.example.samsung_work_schedule.feature.calender.component.*
-import com.example.samsung_work_schedule.feature.calender.viewmodel.CalendarViewModel
+import com.example.samsung_work_schedule.feature.calender.CalendarViewModel
 import com.example.samsung_work_schedule.theme.ScheduleTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -96,16 +96,15 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
             ShiftEntrySheet(
                 onDismiss = { viewModel.setBottomSheetVisible(false) },
                 onSave = { startDate, endDate, shiftType ->
-                    val type = WorkType.valueOf(shiftType)
-                    var current = startDate
-
-                    while (!current.isAfter(endDate)) {
-                        val existingSchedule = uiState.workSchedules.find { it.date == current }
-
-                        viewModel.saveSchedule(current, current, type, existingSchedule?.note ?: "")
-                        current = current.plusDays(1)
+                    val type = try {
+                        WorkType.valueOf(shiftType)
+                    } catch (e: Exception) {
+                        WorkType.NONE
                     }
 
+                    if (type != WorkType.NONE) {
+                        viewModel.saveSchedule(startDate, endDate, type, "")
+                    }
                     viewModel.setBottomSheetVisible(false)
                 }
             )

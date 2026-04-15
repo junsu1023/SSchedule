@@ -112,10 +112,10 @@ fun ShiftEntrySheet(
                     modifier = Modifier
                         .padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
                         .size(24.dp)
-                        .background(ScheduleTheme.colors.primary.copy(alpha = 0.1f), CircleShape),
+                        .background(ScheduleTheme.colors.containerColor1.copy(alpha = 0.1f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("~", color = ScheduleTheme.colors.primary, fontWeight = FontWeight.Bold)
+                    Text("~", color = ScheduleTheme.colors.textColor1, fontWeight = FontWeight.Bold)
                 }
 
                 DateInputBox(
@@ -123,8 +123,8 @@ fun ShiftEntrySheet(
                     date = endDate,
                     onClick = { pickingDateFor = "END" },
                     modifier = Modifier.weight(1f),
-                    containerColor = ScheduleTheme.colors.primary.copy(alpha = 0.1f), // 종료일: 메인 포인트 색상의 연한 버전
-                    borderColor = ScheduleTheme.colors.primary.copy(alpha = 0.3f)
+                    containerColor = ScheduleTheme.colors.containerColor1.copy(alpha = 0.1f),
+                    borderColor = ScheduleTheme.colors.containerColor1.copy(alpha = 0.3f)
                 )
             }
 

@@ -1,4 +1,3 @@
-
 package com.example.samsung_work_schedule
 
 import android.Manifest
@@ -12,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.samsung_work_schedule.theme.SamsungWorkScheduleTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,16 +25,27 @@ class MainActivity : ComponentActivity() {
     ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val startTime = System.currentTimeMillis()
+        val minimumDuration = 2000L // 2초
+
+        splashScreen.setKeepOnScreenCondition {
+            val elapsed = System.currentTimeMillis() - startTime
+            viewModel.isDarkMode.value == null || elapsed < minimumDuration
+        }
 
         checkNotificationPermission()
 
         setContent {
             val isDarkMode by viewModel.isDarkMode.collectAsStateWithLifecycle()
 
-            SamsungWorkScheduleTheme(darkTheme = isDarkMode) {
-                ScheduleApp()
+            if (isDarkMode != null) {
+                SamsungWorkScheduleTheme(darkTheme = isDarkMode == true) {
+                    ScheduleApp()
+                }
             }
         }
     }

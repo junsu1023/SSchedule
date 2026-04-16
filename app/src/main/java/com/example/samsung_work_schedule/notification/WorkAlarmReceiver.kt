@@ -2,6 +2,7 @@ package com.example.samsung_work_schedule.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,6 +15,7 @@ import com.example.domain.model.WorkType
 import com.example.domain.usecase.GetNotificationsUseCase
 import com.example.domain.usecase.GetWorkScheduleByDateUseCase
 import com.example.domain.usecase.GetWorkSchedulesUseCase
+import com.example.samsung_work_schedule.MainActivity
 import com.example.samsung_work_schedule.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -103,6 +105,7 @@ class WorkAlarmReceiver : BroadcastReceiver() {
                 WorkType.DAY -> context.getString(R.string.day)
                 WorkType.SW -> context.getString(R.string.sw)
                 WorkType.GY -> context.getString(R.string.gy)
+                WorkType.OFFICE -> context.getString(R.string.office)
                 WorkType.OFF -> context.getString(R.string.off)
                 else -> context.getString(R.string.shift_none)
             }
@@ -113,6 +116,7 @@ class WorkAlarmReceiver : BroadcastReceiver() {
                 WorkType.DAY -> "06:00 ~ 14:00"
                 WorkType.SW -> "14:00 ~ 22:00"
                 WorkType.GY -> "22:00 ~ 06:00"
+                WorkType.OFFICE -> "00:00 ~ 17:00"
                 else -> "--:-- ~ --:--"
             }
         }
@@ -130,15 +134,14 @@ class WorkAlarmReceiver : BroadcastReceiver() {
             setTextViewText(R.id.tv_tomorrow_time, tomorrowTime.replace(" ~ ", " -\n"))
         }
 
-        // 알림 클릭 시 앱 실행을 위한 Intent 설정
-        val mainIntent = Intent(context, com.example.samsung_work_schedule.MainActivity::class.java).apply {
+        val mainIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val mainPendingIntent = android.app.PendingIntent.getActivity(
+        val mainPendingIntent = PendingIntent.getActivity(
             context,
             0,
             mainIntent,
-            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(context, channelId)

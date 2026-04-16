@@ -1,3 +1,4 @@
+
 package com.example.samsung_work_schedule.notification
 
 import android.app.AlarmManager
@@ -23,9 +24,10 @@ class ShiftAlarmManager @Inject constructor() {
 
     fun scheduleAlarm(schedule: WorkSchedule) {
         val startTime = when (schedule.type) {
-            WorkType.DAY -> LocalTime.of(5, 59)
-            WorkType.SW -> LocalTime.of(13, 59)
-            WorkType.GY -> LocalTime.of(21, 59)
+            WorkType.DAY -> LocalTime.of(4, 59)
+            WorkType.SW -> LocalTime.of(12, 59)
+            WorkType.GY -> LocalTime.of(20, 57)
+            WorkType.OFFICE -> LocalTime.of(6, 59)
             else -> return
         }
 

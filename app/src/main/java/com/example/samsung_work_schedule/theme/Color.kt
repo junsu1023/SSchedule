@@ -32,6 +32,7 @@ val lightColors = ScheduleColors(
     day = Color(0xFF00A389),
     sw = Color(0xFF8E59FF),
     gy = Color(0xFFFF9500),
+    office = Color(0xFF00796B),
     off = Color(0xFFE91E63),
     gridColor = Color(0xFFF7FAFC),
     todayBackground = Color(0xFFE6F0FF),
@@ -70,6 +71,7 @@ val darkColors = ScheduleColors(
     day = Color(0xFF34D399),
     sw = Color(0xFFA78BFA),
     gy = Color(0xFFFBBF24),
+    office = Color(0xFF4DB6AC),
     off = Color(0xFFF472B6),
     gridColor = Color(0xFF000000),
     todayBackground = Color(0xFF1E3A8A),
@@ -110,6 +112,7 @@ class ScheduleColors(
     day: Color,
     sw: Color,
     gy: Color,
+    office: Color,
     off: Color,
     gridColor: Color,
     todayBackground: Color,
@@ -171,6 +174,8 @@ class ScheduleColors(
         private set
     var gy by mutableStateOf(gy)
         private set
+    var office by mutableStateOf(office)
+        private set
     var off by mutableStateOf(off)
         private set
     var gridColor by mutableStateOf(gridColor)
@@ -218,6 +223,7 @@ class ScheduleColors(
         day = day,
         sw = sw,
         gy = gy,
+        office = office,
         off = off,
         gridColor = gridColor,
         todayBackground = todayBackground,
@@ -256,6 +262,7 @@ class ScheduleColors(
         day = other.day
         sw = other.sw
         gy = other.gy
+        office = other.office
         off = other.off
         gridColor = other.gridColor
         todayBackground = other.todayBackground

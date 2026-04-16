@@ -22,7 +22,6 @@ import com.example.domain.model.WorkSchedule
 import com.example.domain.model.WorkType
 import com.example.samsung_work_schedule.R
 import com.example.samsung_work_schedule.feature.calender.component.*
-import com.example.samsung_work_schedule.feature.calender.CalendarViewModel
 import com.example.samsung_work_schedule.theme.ScheduleTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -35,7 +34,40 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
     val initialPage = totalPageCount / 2
     val pagerState = rememberPagerState(pageCount = { totalPageCount }, initialPage = initialPage)
     val baseMonth = remember { YearMonth.now() }
-    val currentYearMonth = baseMonth.plusMonths((pagerState.currentPage - initialPage).toLong())
+    val currentYearMonth by remember {
+        derivedStateOf {
+            baseMonth.plusMonths((pagerState.currentPage - initialPage).toLong())
+        }
+    }
+
+    val onDateSelected = remember(viewModel) { { date: LocalDate? -> viewModel.onDateSelected(date) } }
+    val onBottomSheetVisible = remember(viewModel) { { visible: Boolean -> viewModel.setBottomSheetVisible(visible) } }
+    val onSaveSchedules = remember(viewModel) {
+        { startDate: LocalDate, endDate: LocalDate, shiftType: String ->
+            val type = try {
+                WorkType.valueOf(shiftType)
+            } catch (e: Exception) {
+                WorkType.NONE
+            }
+
+            if (type != WorkType.NONE) {
+                viewModel.saveSchedule(startDate, endDate, type, "")
+            }
+            viewModel.setBottomSheetVisible(false)
+        }
+    }
+    val onSaveDetail = remember(viewModel) {
+        { date: LocalDate, type: WorkType, notes: String ->
+            viewModel.saveSchedule(date, date, type, notes)
+            viewModel.onDateSelected(null)
+        }
+    }
+    val onDeleteDetail = remember(viewModel) {
+        { date: LocalDate ->
+            viewModel.deleteSchedule(date, date)
+            viewModel.onDateSelected(null)
+        }
+    }
 
     LaunchedEffect(currentYearMonth) {
         viewModel.onMonthChanged(currentYearMonth)
@@ -51,7 +83,7 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = { viewModel.setBottomSheetVisible(true) })
+                FloatingActionButton(onClick = { onBottomSheetVisible(true) })
             },
             modifier = Modifier.blur(if(uiState.isBottomSheetVisible || uiState.selectedDateForDetail != null) 10.dp else 0.dp)
         ) { paddingValues ->
@@ -67,26 +99,29 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
                 ),
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
-                item {
+                item(key = "header") {
                     CalendarHeader(currentYearMonth.monthValue)
                 }
 
-                item {
+                item(key = "calendar") {
                     CalendarArea(
                         pagerState = pagerState,
                         baseMonth = baseMonth,
                         initialPage = initialPage,
                         workSchedules = uiState.workSchedules,
-                        onDateClick = { viewModel.onDateSelected(it) }
+                        onDateClick = onDateSelected
                     )
                 }
 
-                item {
-                    val todaySchedule = uiState.workSchedules.find { it.date == LocalDate.now() }
+                item(key = "today_card") {
+                    val today = remember { LocalDate.now() }
+                    val todaySchedule = remember(uiState.workSchedules, today) {
+                        uiState.workSchedules.find { it.date == today }
+                    }
 
                     TodayShiftCard(
                         schedule = todaySchedule,
-                        onDetailClick = { viewModel.onDateSelected(LocalDate.now()) }
+                        onDetailClick = { onDateSelected(today) }
                     )
                 }
             }
@@ -94,37 +129,22 @@ fun CalendarScreen(viewModel: CalendarViewModel = hiltViewModel()) {
 
         if (uiState.isBottomSheetVisible) {
             ShiftEntrySheet(
-                onDismiss = { viewModel.setBottomSheetVisible(false) },
-                onSave = { startDate, endDate, shiftType ->
-                    val type = try {
-                        WorkType.valueOf(shiftType)
-                    } catch (e: Exception) {
-                        WorkType.NONE
-                    }
-
-                    if (type != WorkType.NONE) {
-                        viewModel.saveSchedule(startDate, endDate, type, "")
-                    }
-                    viewModel.setBottomSheetVisible(false)
-                }
+                onDismiss = { onBottomSheetVisible(false) },
+                onSave = onSaveSchedules
             )
         }
 
         uiState.selectedDateForDetail?.let { date ->
-            val schedule = uiState.workSchedules.find { it.date == date }
+            val schedule = remember(uiState.workSchedules, date) {
+                uiState.workSchedules.find { it.date == date }
+            }
 
             ShiftDetailDialog(
                 date = date,
                 schedule = schedule,
-                onDismiss = { viewModel.onDateSelected(null) },
-                onSave = { type, notes ->
-                    viewModel.saveSchedule(date, date, type, notes)
-                    viewModel.onDateSelected(null)
-                },
-                onDelete = {
-                    viewModel.deleteSchedule(date, date)
-                    viewModel.onDateSelected(null)
-                }
+                onDismiss = { onDateSelected(null) },
+                onSave = { type, notes -> onSaveDetail(date, type, notes) },
+                onDelete = { onDeleteDetail(date) }
             )
         }
     }
@@ -139,6 +159,7 @@ fun TodayShiftCard(
         WorkType.DAY -> "DAY" to "06:00 ~\n14:00"
         WorkType.SW -> "SW" to "14:00 ~\n22:00"
         WorkType.GY -> "GY" to "22:00 ~\n06:00"
+        WorkType.OFFICE -> "OFFICE" to "08:00 ~\n17:00"
         WorkType.OFF -> "OFF" to "00:00 ~\n00:00"
         else -> "정보 없음" to "00:00 ~\n00:00"
     }

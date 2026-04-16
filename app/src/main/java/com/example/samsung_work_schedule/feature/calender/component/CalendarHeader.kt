@@ -47,6 +47,7 @@ fun KindRow() {
         KindItem(color = ScheduleTheme.colors.day, label = stringResource(R.string.day))
         KindItem(color = ScheduleTheme.colors.sw, label = stringResource(R.string.sw))
         KindItem(color = ScheduleTheme.colors.gy, label = stringResource(R.string.gy))
+        KindItem(color = ScheduleTheme.colors.office, label = stringResource(R.string.office))
         KindItem(color = ScheduleTheme.colors.off, label = stringResource(R.string.off))
     }
 }

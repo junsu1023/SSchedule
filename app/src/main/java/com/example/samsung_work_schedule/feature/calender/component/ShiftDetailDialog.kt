@@ -88,7 +88,7 @@ fun ShiftDetailDialog(
                             onDismissRequest = { showMenu.value = false },
                             modifier = Modifier.background(ScheduleTheme.colors.background1)
                         ) {
-                            listOf(WorkType.DAY, WorkType.SW, WorkType.GY, WorkType.OFF).forEach { type ->
+                            listOf(WorkType.DAY, WorkType.SW, WorkType.GY, WorkType.OFFICE, WorkType.OFF).forEach { type ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -96,6 +96,7 @@ fun ShiftDetailDialog(
                                                 WorkType.DAY -> stringResource(R.string.day)
                                                 WorkType.SW -> stringResource(R.string.sw)
                                                 WorkType.GY -> stringResource(R.string.gy)
+                                                WorkType.OFFICE -> stringResource(R.string.office)
                                                 WorkType.OFF -> stringResource(R.string.off)
                                                 else -> ""
                                             },
@@ -176,6 +177,7 @@ private fun ShiftBadge(workType: WorkType) {
         WorkType.DAY -> stringResource(R.string.day)
         WorkType.SW -> stringResource(R.string.sw)
         WorkType.GY -> stringResource(R.string.gy)
+        WorkType.OFFICE -> stringResource(R.string.office)
         WorkType.OFF -> stringResource(R.string.off)
         WorkType.NONE -> stringResource(R.string.shift_none)
     }
@@ -184,6 +186,7 @@ private fun ShiftBadge(workType: WorkType) {
         WorkType.DAY -> ScheduleTheme.colors.day
         WorkType.SW -> ScheduleTheme.colors.sw
         WorkType.GY -> ScheduleTheme.colors.gy
+        WorkType.OFFICE -> ScheduleTheme.colors.office
         WorkType.OFF -> ScheduleTheme.colors.off
         WorkType.NONE -> ScheduleTheme.colors.textColor3
     }
@@ -217,6 +220,7 @@ private fun getWorkTimeRange(workType: WorkType): String {
         WorkType.DAY -> "06:00 ~ 14:00"
         WorkType.SW -> "14:00 ~ 22:00"
         WorkType.GY -> "22:00 ~ 06:00"
+        WorkType.OFFICE -> "00:00 ~ 17:00"
         else -> "0:00 ~ 00:00"
     }
 }

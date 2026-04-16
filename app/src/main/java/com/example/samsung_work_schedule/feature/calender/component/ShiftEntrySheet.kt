@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Nightlight
 import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +30,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 enum class ShiftEntry(val entry: String) {
-    DAY("DAY"), SW("SW"), GY("GY"), OFF("OFF")
+    DAY("DAY"), SW("SW"), GY("GY"), OFFICE("OFFICE"), OFF("OFF")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,9 +39,10 @@ fun ShiftEntrySheet(
     onDismiss: () -> Unit,
     onSave: (startDate: LocalDate, endDate: LocalDate, shiftType: String) -> Unit
 ) {
+    val nextMonthFirstDay = remember { LocalDate.now().plusMonths(1).withDayOfMonth(1) }
     var selectedShift by remember { mutableStateOf(ShiftEntry.DAY.name) }
-    var startDate by remember { mutableStateOf(LocalDate.now()) }
-    var endDate by remember { mutableStateOf(LocalDate.now().plusDays(4)) }
+    var startDate by remember { mutableStateOf(nextMonthFirstDay) }
+    var endDate by remember { mutableStateOf(nextMonthFirstDay.plusDays(5)) }
     var pickingDateFor by remember { mutableStateOf<String?>(null) }
 
     ModalBottomSheet(
@@ -173,6 +175,15 @@ fun ShiftEntrySheet(
                 )
 
                 ShiftTypeCard(
+                    label = stringResource(R.string.office),
+                    icon = Icons.Default.Work,
+                    color = ScheduleTheme.colors.office,
+                    isSelected = selectedShift == ShiftEntry.OFFICE.name,
+                    onClick = { selectedShift = ShiftEntry.OFFICE.name },
+                    modifier = Modifier.weight(1f)
+                )
+
+                ShiftTypeCard(
                     label = ShiftEntry.OFF.entry,
                     icon = Icons.Default.CalendarMonth,
                     color = ScheduleTheme.colors.off,
@@ -233,18 +244,18 @@ fun ShiftEntrySheet(
             onDateSelected = { selectedDate ->
                 if (pickingDateFor == "START") {
                     startDate = selectedDate
-                    
+
                     if (endDate.isBefore(selectedDate)) {
                         endDate = selectedDate
                     }
                 } else {
                     endDate = selectedDate
-                    
+
                     if (startDate.isAfter(selectedDate)) {
                         startDate = selectedDate
                     }
                 }
-                
+
                 pickingDateFor = null
             },
             onDismiss = { pickingDateFor = null }

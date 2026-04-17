@@ -26,4 +26,3 @@ rootProject.name = "Samsung-Work-Schedule"
 include(":app")
 include(":data")
 include(":domain")
-include(":core")

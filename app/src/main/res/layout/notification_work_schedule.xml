@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:baselineAligned="false">
+
+    <!-- Today Card -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/bg_notification_card_today"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_marginEnd="4dp">
+
+        <TextView
+            android:id="@+id/tv_today_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TODAY'S SHIFT"
+            android:textColor="#5E9387"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:id="@+id/tv_today_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DAY"
+                android:textColor="#00695C"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_today_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="08:00 -\n16:00"
+                android:textColor="#5E9387"
+                android:textSize="11sp"
+                android:gravity="end" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- Tomorrow Card -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/bg_notification_card_tomorrow"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:layout_marginStart="4dp">
+
+        <TextView
+            android:id="@+id/tv_tomorrow_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TOMORROW"
+            android:textColor="#8E84AD"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:id="@+id/tv_tomorrow_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SW"
+                android:textColor="#4527A0"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_tomorrow_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="16:00 -\n00:00"
+                android:textColor="#8E84AD"
+                android:textSize="11sp"
+                android:gravity="end" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

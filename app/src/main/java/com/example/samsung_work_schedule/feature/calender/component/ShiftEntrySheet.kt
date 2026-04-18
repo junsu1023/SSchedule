@@ -145,7 +145,7 @@ fun ShiftEntrySheet(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 ShiftTypeCard(
                     label = ShiftEntry.DAY.entry,
@@ -343,11 +343,13 @@ fun ShiftTypeCard(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(4.dp)
         ) {
             Text(
                 text = label,
-                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = color)
+                style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Bold, color = color),
+                maxLines = 1,
+                softWrap = false
             )
 
             Spacer(modifier = Modifier.height(8.dp))

@@ -116,7 +116,7 @@ class WorkAlarmReceiver : BroadcastReceiver() {
                 WorkType.DAY -> "06:00 ~ 14:00"
                 WorkType.SW -> "14:00 ~ 22:00"
                 WorkType.GY -> "22:00 ~ 06:00"
-                WorkType.OFFICE -> "00:00 ~ 17:00"
+                WorkType.OFFICE -> "08:00 ~ 17:00"
                 else -> "--:-- ~ --:--"
             }
         }

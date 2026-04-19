@@ -79,6 +79,7 @@ class WorkScheduleWidgetProvider : AppWidgetProvider() {
             WorkType.SW -> context.getString(R.string.sw)
             WorkType.GY -> context.getString(R.string.gy)
             WorkType.OFF -> context.getString(R.string.off)
+            WorkType.OFFICE -> context.getString(R.string.office)
             else -> context.getString(R.string.shift_none)
         }
     }

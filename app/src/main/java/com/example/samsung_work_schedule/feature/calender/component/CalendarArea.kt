@@ -140,10 +140,17 @@ fun MonthCalendar(
                             }
 
                             Box(modifier = Modifier.weight(1f)) {
+                                val prevDate = date.minusDays(1)
+                                val nextDate = date.plusDays(1)
+                                val prevWorkType = scheduleState.schedules[prevDate]
+                                val nextWorkType = scheduleState.schedules[nextDate]
+
                                 DayCell(
                                     modifier = Modifier.fillMaxSize(),
                                     day = date.dayOfMonth.toString(),
                                     workType = workType,
+                                    prevWorkType = prevWorkType,
+                                    nextWorkType = nextWorkType,
                                     isToday = isToday,
                                     isSelected = isSelected,
                                     isInRange = isInRange,
@@ -209,6 +216,8 @@ fun DayCell(
     modifier: Modifier = Modifier,
     day: String,
     workType: WorkType?,
+    prevWorkType: WorkType? = null,
+    nextWorkType: WorkType? = null,
     isToday: Boolean,
     isSelected: Boolean = false,
     isInRange: Boolean = false,
@@ -268,7 +277,11 @@ fun DayCell(
                     contentAlignment = Alignment.TopCenter
                 ) {
                     if (isCurrentMonth && !isDialog && workType != null && workType != WorkType.NONE) {
-                        WorkDot(type = workType)
+                        WorkBar(
+                            type = workType,
+                            isConnectedLeft = workType == prevWorkType,
+                            isConnectedRight = workType == nextWorkType
+                        )
                     }
                 }
             }
@@ -297,10 +310,14 @@ private fun TodayBadge(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun WorkDot(type: WorkType) {
+private fun WorkBar(
+    type: WorkType,
+    isConnectedLeft: Boolean,
+    isConnectedRight: Boolean
+) {
     if (type == WorkType.NONE) return
 
-    val dotColor = when (type) {
+    val barColor = when (type) {
         WorkType.DAY -> ScheduleTheme.colors.day
         WorkType.SW -> ScheduleTheme.colors.sw
         WorkType.GY -> ScheduleTheme.colors.gy
@@ -309,12 +326,43 @@ private fun WorkDot(type: WorkType) {
         WorkType.NONE -> ScheduleTheme.colors.transparent
     }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(modifier = Modifier.height(2.dp))
-        Box(
-            modifier = Modifier
-                .size(4.dp)
-                .background(dotColor, CircleShape)
-        )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(4.dp)
+                    .background(if (isConnectedLeft) barColor else Color.Transparent)
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(4.dp)
+                    .background(
+                        color = barColor,
+                        shape = when {
+                            isConnectedLeft && isConnectedRight -> RoundedCornerShape(0.dp)
+                            isConnectedLeft -> RoundedCornerShape(topEnd = 2.dp, bottomEnd = 2.dp)
+                            isConnectedRight -> RoundedCornerShape(topStart = 2.dp, bottomStart = 2.dp)
+                            else -> CircleShape
+                        }
+                    )
+            )
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(4.dp)
+                    .background(if (isConnectedRight) barColor else Color.Transparent)
+            )
+        }
     }
 }

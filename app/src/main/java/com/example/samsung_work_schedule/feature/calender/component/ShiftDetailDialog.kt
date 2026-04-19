@@ -152,6 +152,7 @@ fun ShiftDetailDialog(
                     },
                     modifier = Modifier.fillMaxWidth().height(100.dp),
                     shape = RoundedCornerShape(12.dp),
+                    textStyle = TextStyle(fontSize = 14.sp, color = ScheduleTheme.colors.textColor4),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = ScheduleTheme.colors.surfaceColor1,
                         focusedContainerColor = ScheduleTheme.colors.surfaceColor1,

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_day_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF">
+
+        <TextView
+            android:id="@+id/tv_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="1"
+            android:textColor="#333333"
+            android:textSize="17sp" />
+
+        <LinearLayout
+            android:id="@+id/ll_work_bar_container"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_below="@id/tv_day"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/v_work_bar_left"
+                android:layout_width="0dp"
+                android:layout_height="5dp"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                android:src="#00000000" />
+
+            <ImageView
+                android:id="@+id/v_work_bar_center"
+                android:layout_width="6dp"
+                android:layout_height="5dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/bg_work_bar_single" />
+
+            <ImageView
+                android:id="@+id/v_work_bar_right"
+                android:layout_width="0dp"
+                android:layout_height="5dp"
+                android:layout_weight="1"
+                android:scaleType="fitXY"
+                android:src="#00000000" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_sep_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:src="#EEEEEE" />
+
+        <ImageView
+            android:id="@+id/iv_sep_right"
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:src="#EEEEEE" />
+    </RelativeLayout>
+</LinearLayout>

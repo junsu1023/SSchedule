@@ -1,13 +1,16 @@
 package com.example.samsung_work_schedule.feature.calender.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,7 +46,13 @@ fun CalendarHeader(month: Int) {
 
 @Composable
 fun KindRow() {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         KindItem(color = ScheduleTheme.colors.day, label = stringResource(R.string.day))
         KindItem(color = ScheduleTheme.colors.sw, label = stringResource(R.string.sw))
         KindItem(color = ScheduleTheme.colors.gy, label = stringResource(R.string.gy))

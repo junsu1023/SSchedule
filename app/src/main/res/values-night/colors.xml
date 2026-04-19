@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget Colors (Dark) - Matching Color.kt darkColors -->
+    <color name="widget_bg">#121212</color> <!-- background1 -->
+    <color name="widget_header_text">#FFFFFF</color> <!-- textColor7 -->
+    <color name="widget_day_name_text">#94A3B8</color> <!-- textColor4 -->
+    <color name="widget_separator">#1E293B</color> <!-- indicatorColor1/surfaceColor1 -->
+
+    <color name="widget_day_text_current">#FFFFFF</color> <!-- textColor7 -->
+    <color name="widget_day_text_other">#475569</color> <!-- textColor6 -->
+    <color name="widget_day_text_today">#60A5FA</color> <!-- textColor1 -->
+    <color name="widget_day_bg_today">#1E3A8A</color> <!-- todayBackground -->
+    <color name="widget_day_bg_other">#0F1930</color> <!-- dayBackground1 -->
+
+    <!-- Work Colors -->
+    <color name="widget_work_day">#34D399</color>
+    <color name="widget_work_sw">#A78BFA</color>
+    <color name="widget_work_gy">#FBBF24</color>
+    <color name="widget_work_office">#4DB6AC</color>
+    <color name="widget_work_off">#F472B6</color>
+</resources>

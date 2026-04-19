@@ -15,8 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.YearMonth
-import androidx.compose.ui.graphics.toArgb
-import com.example.samsung_work_schedule.theme.lightColors
+import androidx.core.content.ContextCompat
 
 @AndroidEntryPoint
 class WorkScheduleWidgetService : RemoteViewsService() {
@@ -80,20 +79,31 @@ class WorkScheduleRemoteViewsFactory(
         val workType = workSchedules[date]
         val isCurrentMonth = YearMonth.from(date) == currentMonth
         val isToday = date == LocalDate.now()
+        val dayString = date.dayOfMonth.toString()
 
         val views = RemoteViews(context.packageName, R.layout.item_widget_calendar_day)
         
-        views.setTextViewText(R.id.tv_day, date.dayOfMonth.toString())
-        
-        if (isToday) {
-            views.setTextColor(R.id.tv_day, lightColors.textColor1.toArgb())
-            views.setInt(R.id.rl_day_container, "setBackgroundColor", lightColors.todayBackground.toArgb())
-        } else if (isCurrentMonth) {
-            views.setTextColor(R.id.tv_day, lightColors.textColor7.toArgb())
-            views.setInt(R.id.rl_day_container, "setBackgroundColor", lightColors.background1.toArgb())
-        } else {
-            views.setTextColor(R.id.tv_day, lightColors.textColor6.toArgb())
-            views.setInt(R.id.rl_day_container, "setBackgroundColor", lightColors.dayBackground1.toArgb())
+        // Hide all day text views first
+        views.setViewVisibility(R.id.tv_day_current, View.GONE)
+        views.setViewVisibility(R.id.tv_day_today, View.GONE)
+        views.setViewVisibility(R.id.tv_day_other, View.GONE)
+
+        when {
+            isToday -> {
+                views.setViewVisibility(R.id.tv_day_today, View.VISIBLE)
+                views.setTextViewText(R.id.tv_day_today, dayString)
+                views.setInt(R.id.rl_day_container, "setBackgroundResource", R.color.widget_day_bg_today)
+            }
+            isCurrentMonth -> {
+                views.setViewVisibility(R.id.tv_day_current, View.VISIBLE)
+                views.setTextViewText(R.id.tv_day_current, dayString)
+                views.setInt(R.id.rl_day_container, "setBackgroundResource", R.color.widget_bg)
+            }
+            else -> {
+                views.setViewVisibility(R.id.tv_day_other, View.VISIBLE)
+                views.setTextViewText(R.id.tv_day_other, dayString)
+                views.setInt(R.id.rl_day_container, "setBackgroundResource", R.color.widget_day_bg_other)
+            }
         }
 
         if (isCurrentMonth && workType != null && workType != WorkType.NONE) {
@@ -102,7 +112,7 @@ class WorkScheduleRemoteViewsFactory(
             
             val isConnectedLeft = workType == prevWorkType
             val isConnectedRight = workType == nextWorkType
-            val barColor = getWorkColor(workType)
+            val barColor = ContextCompat.getColor(context, getWorkColorRes(workType))
 
             views.setViewVisibility(R.id.ll_work_bar_container, View.VISIBLE)
 
@@ -115,17 +125,8 @@ class WorkScheduleRemoteViewsFactory(
             views.setImageViewResource(R.id.v_work_bar_center, centerRes)
             views.setInt(R.id.v_work_bar_center, "setColorFilter", barColor)
 
-            if (isConnectedLeft) {
-                views.setInt(R.id.v_work_bar_left, "setBackgroundColor", barColor)
-            } else {
-                views.setInt(R.id.v_work_bar_left, "setBackgroundColor", Color.TRANSPARENT)
-            }
-
-            if (isConnectedRight) {
-                views.setInt(R.id.v_work_bar_right, "setBackgroundColor", barColor)
-            } else {
-                views.setInt(R.id.v_work_bar_right, "setBackgroundColor", Color.TRANSPARENT)
-            }
+            views.setInt(R.id.v_work_bar_left, "setBackgroundColor", if (isConnectedLeft) barColor else Color.TRANSPARENT)
+            views.setInt(R.id.v_work_bar_right, "setBackgroundColor", if (isConnectedRight) barColor else Color.TRANSPARENT)
         } else {
             views.setViewVisibility(R.id.ll_work_bar_container, View.GONE)
         }
@@ -133,14 +134,14 @@ class WorkScheduleRemoteViewsFactory(
         return views
     }
 
-    private fun getWorkColor(type: WorkType): Int {
+    private fun getWorkColorRes(type: WorkType): Int {
         return when (type) {
-            WorkType.DAY -> lightColors.day.toArgb()
-            WorkType.SW -> lightColors.sw.toArgb()
-            WorkType.GY -> lightColors.gy.toArgb()
-            WorkType.OFFICE -> lightColors.office.toArgb()
-            WorkType.OFF -> lightColors.off.toArgb()
-            else -> Color.TRANSPARENT
+            WorkType.DAY -> R.color.widget_work_day
+            WorkType.SW -> R.color.widget_work_sw
+            WorkType.GY -> R.color.widget_work_gy
+            WorkType.OFFICE -> R.color.widget_work_office
+            WorkType.OFF -> R.color.widget_work_off
+            else -> android.R.color.transparent
         }
     }
 

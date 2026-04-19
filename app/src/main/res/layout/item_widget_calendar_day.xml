@@ -9,24 +9,54 @@
         android:id="@+id/rl_day_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="@color/widget_bg">
 
-        <TextView
-            android:id="@+id/tv_day"
+        <!-- 날짜 텍스트 컨테이너 -->
+        <FrameLayout
+            android:id="@+id/fl_day_text_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:text="1"
-            android:textColor="#333333"
-            android:textSize="17sp" />
+            android:layout_marginTop="12dp">
 
+            <!-- 일반 날짜 (이번 달) -->
+            <TextView
+                android:id="@+id/tv_day_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_day_text_current"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="visible" />
+
+            <!-- 오늘 날짜 강조 -->
+            <TextView
+                android:id="@+id/tv_day_today"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_day_text_today"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <!-- 지난달/다음달 날짜 -->
+            <TextView
+                android:id="@+id/tv_day_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/widget_day_text_other"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- 근무 바 컨테이너 (텍스트 컨테이너 아래로 고정) -->
         <LinearLayout
             android:id="@+id/ll_work_bar_container"
             android:layout_width="match_parent"
             android:layout_height="12dp"
-            android:layout_below="@id/tv_day"
-            android:layout_marginTop="10dp"
+            android:layout_below="@id/fl_day_text_container"
+            android:layout_marginTop="6dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:visibility="gone">
@@ -34,25 +64,25 @@
             <ImageView
                 android:id="@+id/v_work_bar_left"
                 android:layout_width="0dp"
-                android:layout_height="5dp"
+                android:layout_height="4dp"
                 android:layout_weight="1"
                 android:scaleType="fitXY"
-                android:src="#00000000" />
+                android:src="@android:color/transparent" />
 
             <ImageView
                 android:id="@+id/v_work_bar_center"
                 android:layout_width="6dp"
-                android:layout_height="5dp"
+                android:layout_height="4dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/bg_work_bar_single" />
 
             <ImageView
                 android:id="@+id/v_work_bar_right"
                 android:layout_width="0dp"
-                android:layout_height="5dp"
+                android:layout_height="4dp"
                 android:layout_weight="1"
                 android:scaleType="fitXY"
-                android:src="#00000000" />
+                android:src="@android:color/transparent" />
         </LinearLayout>
 
         <ImageView
@@ -60,13 +90,13 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
-            android:src="#EEEEEE" />
+            android:background="@color/widget_separator" />
 
         <ImageView
             android:id="@+id/iv_sep_right"
             android:layout_width="0.5dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:src="#EEEEEE" />
+            android:background="@color/widget_separator" />
     </RelativeLayout>
 </LinearLayout>

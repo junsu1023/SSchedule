@@ -23,8 +23,7 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Locale
 import javax.inject.Inject
-import androidx.compose.ui.graphics.toArgb
-import com.example.samsung_work_schedule.theme.lightColors
+import androidx.core.content.ContextCompat
 
 @AndroidEntryPoint
 class WorkScheduleWidgetProvider : AppWidgetProvider() {
@@ -72,7 +71,6 @@ class WorkScheduleWidgetProvider : AppWidgetProvider() {
             views.setViewVisibility(R.id.row_5, if (hasSixWeeks) View.VISIBLE else View.GONE)
 
             val rowIds = listOf(R.id.row_0, R.id.row_1, R.id.row_2, R.id.row_3, R.id.row_4, R.id.row_5)
-            
             rowIds.forEachIndexed { rowIndex, rowId ->
                 views.removeAllViews(rowId)
                 for (colIndex in 0 until 7) {
@@ -87,12 +85,8 @@ class WorkScheduleWidgetProvider : AppWidgetProvider() {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }
             val pendingIntent = PendingIntent.getActivity(
-                context, 
-                0, 
-                intent, 
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-
             views.setOnClickPendingIntent(R.id.ll_calendar_container, pendingIntent)
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -109,18 +103,30 @@ class WorkScheduleWidgetProvider : AppWidgetProvider() {
         val workType = schedules[date] ?: WorkType.NONE
         val isCurrentMonth = YearMonth.from(date) == currentMonth
         val isToday = date == LocalDate.now()
+        val dayString = date.dayOfMonth.toString()
 
-        views.setTextViewText(R.id.tv_day, date.dayOfMonth.toString())
-        
-        if (isToday) {
-            views.setTextColor(R.id.tv_day, lightColors.textColor1.toArgb())
-            views.setInt(R.id.rl_day_container, "setBackgroundColor", lightColors.todayBackground.toArgb())
-        } else if (isCurrentMonth) {
-            views.setTextColor(R.id.tv_day, lightColors.textColor7.toArgb())
-            views.setInt(R.id.rl_day_container, "setBackgroundColor", lightColors.background1.toArgb())
-        } else {
-            views.setTextColor(R.id.tv_day, lightColors.textColor6.toArgb())
-            views.setInt(R.id.rl_day_container, "setBackgroundColor", lightColors.dayBackground1.toArgb())
+        // Hide all day text views first
+        views.setViewVisibility(R.id.tv_day_current, View.GONE)
+        views.setViewVisibility(R.id.tv_day_today, View.GONE)
+        views.setViewVisibility(R.id.tv_day_other, View.GONE)
+
+        // Show the correct one and set text
+        when {
+            isToday -> {
+                views.setViewVisibility(R.id.tv_day_today, View.VISIBLE)
+                views.setTextViewText(R.id.tv_day_today, dayString)
+                views.setInt(R.id.rl_day_container, "setBackgroundResource", R.color.widget_day_bg_today)
+            }
+            isCurrentMonth -> {
+                views.setViewVisibility(R.id.tv_day_current, View.VISIBLE)
+                views.setTextViewText(R.id.tv_day_current, dayString)
+                views.setInt(R.id.rl_day_container, "setBackgroundResource", R.color.widget_bg)
+            }
+            else -> {
+                views.setViewVisibility(R.id.tv_day_other, View.VISIBLE)
+                views.setTextViewText(R.id.tv_day_other, dayString)
+                views.setInt(R.id.rl_day_container, "setBackgroundResource", R.color.widget_day_bg_other)
+            }
         }
 
         if (isCurrentMonth && workType != WorkType.NONE) {
@@ -128,7 +134,7 @@ class WorkScheduleWidgetProvider : AppWidgetProvider() {
             val nextWorkType = schedules[date.plusDays(1)]
             val isConnectedLeft = workType == prevWorkType
             val isConnectedRight = workType == nextWorkType
-            val barColor = getWorkColor(workType)
+            val barColor = ContextCompat.getColor(context, getWorkColorRes(workType))
 
             views.setViewVisibility(R.id.ll_work_bar_container, View.VISIBLE)
             
@@ -141,11 +147,10 @@ class WorkScheduleWidgetProvider : AppWidgetProvider() {
             
             if (isConnectedLeft && isConnectedRight) {
                 views.setImageViewResource(R.id.v_work_bar_center, android.R.color.white)
-                views.setInt(R.id.v_work_bar_center, "setColorFilter", barColor)
             } else {
                 views.setImageViewResource(R.id.v_work_bar_center, centerRes)
-                views.setInt(R.id.v_work_bar_center, "setColorFilter", barColor)
             }
+            views.setInt(R.id.v_work_bar_center, "setColorFilter", barColor)
 
             views.setInt(R.id.v_work_bar_left, "setBackgroundColor", if (isConnectedLeft) barColor else Color.TRANSPARENT)
             views.setInt(R.id.v_work_bar_right, "setBackgroundColor", if (isConnectedRight) barColor else Color.TRANSPARENT)
@@ -156,23 +161,27 @@ class WorkScheduleWidgetProvider : AppWidgetProvider() {
         return views
     }
 
-    private fun getWorkColor(type: WorkType): Int {
+    private fun getWorkColorRes(type: WorkType): Int {
         return when (type) {
-            WorkType.DAY -> lightColors.day.toArgb()
-            WorkType.SW -> lightColors.sw.toArgb()
-            WorkType.GY -> lightColors.gy.toArgb()
-            WorkType.OFFICE -> lightColors.office.toArgb()
-            WorkType.OFF -> lightColors.off.toArgb()
-            else -> Color.TRANSPARENT
+            WorkType.DAY -> R.color.widget_work_day
+            WorkType.SW -> R.color.widget_work_sw
+            WorkType.GY -> R.color.widget_work_gy
+            WorkType.OFFICE -> R.color.widget_work_office
+            WorkType.OFF -> R.color.widget_work_off
+            else -> android.R.color.transparent
         }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action == ACTION_WIDGET_UPDATE || intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
-            val appWidgetIds = AppWidgetManager.getInstance(context)
-                .getAppWidgetIds(ComponentName(context, WorkScheduleWidgetProvider::class.java))
-            onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds)
+        if (intent.action == ACTION_WIDGET_UPDATE || 
+            intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val componentName = ComponentName(context, WorkScheduleWidgetProvider::class.java)
+            val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+            for (appWidgetId in appWidgetIds) {
+                updateAppWidget(context, appWidgetManager, appWidgetId)
+            }
         }
     }
 

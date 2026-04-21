@@ -25,10 +25,11 @@
             android:textSize="11sp"
             android:textStyle="bold" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
+            android:layout_marginTop="6dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_today_type"
@@ -37,19 +38,20 @@
                 android:text="DAY"
                 android:textColor="#00695C"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:includeFontPadding="false" />
 
             <TextView
                 android:id="@+id/tv_today_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:text="08:00 -\n16:00"
+                android:layout_marginTop="2dp"
+                android:text="08:00 - 16:00"
                 android:textColor="#5E9387"
                 android:textSize="11sp"
-                android:gravity="end" />
-        </RelativeLayout>
+                android:gravity="start"
+                android:includeFontPadding="false" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Tomorrow Card -->
@@ -71,10 +73,11 @@
             android:textSize="11sp"
             android:textStyle="bold" />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp">
+            android:layout_marginTop="6dp"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_tomorrow_type"
@@ -83,18 +86,19 @@
                 android:text="SW"
                 android:textColor="#4527A0"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:includeFontPadding="false" />
 
             <TextView
                 android:id="@+id/tv_tomorrow_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:text="16:00 -\n00:00"
+                android:layout_marginTop="2dp"
+                android:text="16:00 - 00:00"
                 android:textColor="#8E84AD"
                 android:textSize="11sp"
-                android:gravity="end" />
-        </RelativeLayout>
+                android:gravity="start"
+                android:includeFontPadding="false" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
